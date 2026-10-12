@@ -1,36 +1,53 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 포트폴리오
 
-## Getting Started
+웹 퍼블리셔에서 프론트엔드 개발자로 넘어가는 과정을 담은 포트폴리오 사이트예요.
 
-First, run the development server:
+## 실행
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev      # 개발 서버 (http://localhost:3000)
+npm run build    # 정적 페이지 생성
+npm test         # 콘텐츠 로더와 필터 테스트
+npm run lint
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Node 24에서 개발했어요.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 구조
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+app/                 라우팅 (/, /projects/[slug], /log)
+components/          Hero, About, ProjectList, ProjectCard, Contact, SiteHeader
+content/projects/    프로젝트 내용 (MDX 파일, 프로젝트당 1개)
+lib/                 콘텐츠 로더, 필터, 타입
+styles/              디자인 토큰(색, 간격), 전역 스타일
+tests/               Vitest 테스트와 픽스처
+docs/                설계 문서, 구현 계획, 기술 선택 기록
+```
 
-## Learn More
+## 프로젝트 추가하기
 
-To learn more about Next.js, take a look at the following resources:
+`content/projects/`에 `.mdx` 파일 하나를 추가해요. 파일 이름이 주소(`/projects/파일이름`)가 되고, 영문 소문자, 숫자, 하이픈만 쓸 수 있어요.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```mdx
+---
+title: 제목
+summary: 한두 문장 요약
+kind: frontend          # publishing | frontend
+role: 맡은 역할
+stack:
+  - Next.js
+order: 1                # 작을수록 앞에 나와요
+liveUrl: https://...    # 선택
+repoUrl: https://...    # 선택
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+본문은 마크다운으로 써요.
+```
 
-## Deploy on Vercel
+필수 항목이 빠지면 빌드가 파일 이름과 항목 이름을 알려주며 실패해요.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 기술 선택
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Next.js(App Router) 정적 생성, TypeScript, CSS Modules와 CSS 변수, MDX 콘텐츠. 왜 이렇게 골랐고 무엇을 버렸는지는 [`docs/decisions.md`](docs/decisions.md)에 적어 뒀어요.
