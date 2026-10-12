@@ -1,0 +1,39 @@
+.about {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-3);
+  padding-bottom: var(--space-6);
+}
+
+.heading {
+  font-size: 0.875rem;
+  color: var(--color-accent);
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  max-width: 38rem;
+}
+
+.more {
+  color: var(--color-text-muted);
+  font-size: 0.9375rem;
+}
+
+.more a {
+  color: var(--color-text);
+  text-underline-offset: 4px;
+}
+
+.more a:hover {
+  color: var(--color-accent);
+}
+
+@media (min-width: 48rem) {
+  .about {
+    grid-template-columns: 10rem minmax(0, 1fr);
+    gap: var(--space-4);
+  }
+}

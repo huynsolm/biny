@@ -1,0 +1,11 @@
+.projects {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding-bottom: var(--space-6);
+}
+
+.heading {
+  font-size: 0.875rem;
+  color: var(--color-accent);
+}
