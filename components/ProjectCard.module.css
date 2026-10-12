@@ -52,3 +52,17 @@
   font-size: 0.75rem;
   color: var(--color-text-muted);
 }
+
+/* 카드 안쪽 여백만큼 음수 마진을 줘서 이미지가 카드 가장자리까지 꽉 차게 한다. */
+.thumb {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  margin: calc(-1 * var(--space-4)) calc(-1 * var(--space-4)) var(--space-2);
+  border-bottom: 1px solid var(--color-line);
+  overflow: hidden;
+}
+
+.thumbImage {
+  object-fit: cover;
+  object-position: top;
+}

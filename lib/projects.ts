@@ -37,6 +37,11 @@ function parse(file: string, raw: string): Project {
     }
   }
 
+  // 이미지를 쓰면 대체 텍스트도 반드시 있어야 한다(스크린 리더가 이미지를 설명할 수 있게).
+  if (data.image !== undefined && !data.imageAlt) {
+    throw new Error(`${path.basename(file)}: imageAlt is required when image is set`);
+  }
+
   const meta: ProjectMeta = {
     slug,
     title: data.title,
@@ -45,6 +50,8 @@ function parse(file: string, raw: string): Project {
     role: data.role,
     stack: data.stack,
     order: data.order,
+    image: data.image,
+    imageAlt: data.imageAlt,
     liveUrl: data.liveUrl,
     repoUrl: data.repoUrl,
   };

@@ -49,6 +49,16 @@ describe("projects loader", () => {
     expect(() => getAllProjects(fixture("bad-order"))).toThrowError(/order/);
   });
 
+  test("getAllProjects throws when image has no imageAlt", () => {
+    expect(() => getAllProjects(fixture("bad-image"))).toThrowError(/imageAlt/);
+  });
+
+  test("getAllProjects passes image and imageAlt through", () => {
+    const [project] = getAllProjects(fixture("good-image"));
+    expect(project.image).toBe("/images/x.jpg");
+    expect(project.imageAlt).toBe("메인 화면");
+  });
+
   test("getAllProjects throws for a liveUrl without http(s) scheme", () => {
     expect(() => getAllProjects(fixture("bad-url"))).toThrowError(/liveUrl/);
   });

@@ -8,6 +8,8 @@ export type ProjectMeta = {
   role: string;
   stack: string[];
   order: number;
+  image?: string;
+  imageAlt?: string;
   liveUrl?: string;
   repoUrl?: string;
 };

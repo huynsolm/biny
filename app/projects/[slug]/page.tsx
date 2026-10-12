@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
@@ -65,6 +66,18 @@ export default async function ProjectPage({ params }: Props) {
           </p>
         )}
       </header>
+      {meta.image && (
+        <figure className={styles.figure}>
+          <Image
+            src={meta.image}
+            alt={meta.imageAlt ?? ""}
+            fill
+            sizes="(min-width: 60rem) 52rem, 100vw"
+            className={styles.figureImage}
+            priority
+          />
+        </figure>
+      )}
       <div className={styles.prose}>
         <MDXRemote source={content} />
       </div>
