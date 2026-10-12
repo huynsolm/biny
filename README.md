@@ -2,6 +2,8 @@
 
 웹 퍼블리셔에서 프론트엔드 개발자로 넘어가는 과정을 담은 포트폴리오 사이트예요.
 
+배포 주소: https://biny-gilt.vercel.app (Vercel, `main`에 푸시하면 자동 배포)
+
 ## 실행
 
 ```bash
