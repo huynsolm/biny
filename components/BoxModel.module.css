@@ -1,0 +1,41 @@
+.diagram {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.margin {
+  fill: none;
+  stroke: var(--color-line);
+  stroke-width: 1;
+  stroke-dasharray: 4 3;
+}
+
+.border {
+  fill: none;
+  stroke: var(--color-text-muted);
+  stroke-width: 1.5;
+}
+
+.padding {
+  fill: none;
+  stroke: var(--color-accent);
+  stroke-width: 1;
+  stroke-dasharray: 4 3;
+}
+
+.content {
+  fill: var(--color-accent);
+}
+
+.label {
+  fill: var(--color-text-muted);
+  font-family: var(--font-mono);
+  font-size: 9px;
+}
+
+.contentLabel {
+  fill: var(--color-on-accent);
+  font-family: var(--font-mono);
+  font-size: 10px;
+}

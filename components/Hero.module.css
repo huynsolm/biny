@@ -1,6 +1,25 @@
 .hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-5);
+  align-items: center;
   padding-top: var(--space-6);
   padding-bottom: var(--space-6);
+}
+
+/* 도면은 장식이라 좁은 화면에서는 숨겨 핵심 내용이 아래로 밀리지 않게 한다. */
+.figure {
+  display: none;
+}
+
+@media (min-width: 60rem) {
+  .hero {
+    grid-template-columns: minmax(0, 1fr) 15rem;
+  }
+
+  .figure {
+    display: block;
+  }
 }
 
 .kicker {
