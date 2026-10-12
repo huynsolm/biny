@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { filterProjects } from "@/lib/filter";
+import { describeResult, filterProjects } from "@/lib/filter";
 import type { ProjectMeta } from "@/lib/types";
 
 const make = (slug: string, kind: ProjectMeta["kind"]): ProjectMeta => ({
@@ -26,5 +26,16 @@ describe("filterProjects", () => {
   test("returns empty array when nothing matches", () => {
     expect(filterProjects([make("a", "publishing")], "frontend")).toEqual([]);
     expect(filterProjects([], "all")).toEqual([]);
+  });
+});
+
+describe("describeResult", () => {
+  test("announces the number of projects", () => {
+    expect(describeResult(4)).toBe("프로젝트 4개");
+    expect(describeResult(1)).toBe("프로젝트 1개");
+  });
+
+  test("says nothing matched when the count is zero", () => {
+    expect(describeResult(0)).toBe("해당하는 프로젝트가 아직 없어요.");
   });
 });

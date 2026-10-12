@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { filterProjects, type KindFilter } from "@/lib/filter";
+import { describeResult, filterProjects, type KindFilter } from "@/lib/filter";
 import type { ProjectMeta } from "@/lib/types";
 import ProjectCard from "./ProjectCard";
 import styles from "./ProjectList.module.css";
@@ -33,8 +33,12 @@ export default function ProjectList({ projects }: { projects: ProjectMeta[] }) {
           </button>
         ))}
       </div>
+      {/* 필터를 바꾸면 이 영역의 글이 바뀌고, 스크린 리더가 바뀐 내용을 읽어 준다. */}
+      <p role="status" className="sr-only">
+        {describeResult(visible.length)}
+      </p>
       {visible.length === 0 ? (
-        <p className={styles.empty}>해당하는 프로젝트가 아직 없어요.</p>
+        <p className={styles.empty}>{describeResult(0)}</p>
       ) : (
         <ul className={styles.list}>
           {visible.map((project) => (
