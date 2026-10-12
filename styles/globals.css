@@ -28,7 +28,6 @@ body {
 h1,
 h2,
 h3 {
-  font-family: var(--font-mono);
   font-weight: 500;
   line-height: 1.25;
   margin: 0;
@@ -42,6 +41,7 @@ a {
   color: inherit;
 }
 
+.label,
 code,
 pre {
   font-family: var(--font-mono);
