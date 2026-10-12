@@ -1,3 +1,4 @@
+import SectionHeading from "./SectionHeading";
 import styles from "./About.module.css";
 
 const OLD_PORTFOLIO = "https://team-library.biny.cloud/portfolio-recruiting-2026/";
@@ -5,9 +6,7 @@ const OLD_PORTFOLIO = "https://team-library.biny.cloud/portfolio-recruiting-2026
 export default function About() {
   return (
     <section id="about" className={`container ${styles.about}`} aria-labelledby="about-title">
-      <h2 id="about-title" className={`label ${styles.heading}`}>
-        01 / about
-      </h2>
+      <SectionHeading id="about-title" number="01" name="about" />
       <div className={styles.body}>
         <p>
           병원 홈페이지, 기업 사이트, 와인 브랜드 사이트까지 웹 퍼블리셔로 일해 왔어요. 시맨틱

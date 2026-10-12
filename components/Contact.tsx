@@ -1,3 +1,4 @@
+import SectionHeading from "./SectionHeading";
 import styles from "./Contact.module.css";
 
 const EMAIL = "salbulkyb@gmail.com";
@@ -6,9 +7,7 @@ const GITHUB = "https://github.com/huynsolm";
 export default function Contact() {
   return (
     <section id="contact" className={`container ${styles.contact}`} aria-labelledby="contact-title">
-      <h2 id="contact-title" className={`label ${styles.heading}`}>
-        03 / contact
-      </h2>
+      <SectionHeading id="contact-title" number="05" name="contact" />
       <ul className={styles.list}>
         <li>
           <a href={`mailto:${EMAIL}`}>{EMAIL}</a>

@@ -1,7 +1,10 @@
 import About from "@/components/About";
 import Contact from "@/components/Contact";
 import Hero from "@/components/Hero";
+import Method from "@/components/Method";
 import ProjectList from "@/components/ProjectList";
+import SectionHeading from "@/components/SectionHeading";
+import Skills from "@/components/Skills";
 import { getAllProjects } from "@/lib/projects";
 import styles from "./page.module.css";
 
@@ -15,11 +18,11 @@ export default function Home() {
       <Hero />
       <About />
       <section id="projects" className={`container ${styles.projects}`} aria-labelledby="projects-title">
-        <h2 id="projects-title" className={`label ${styles.heading}`}>
-          02 / projects
-        </h2>
+        <SectionHeading id="projects-title" number="02" name="projects" />
         <ProjectList projects={projects} />
       </section>
+      <Skills />
+      <Method />
       <Contact />
     </main>
   );
