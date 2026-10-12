@@ -11,7 +11,7 @@ const STEPS = [
 export default function Method() {
   return (
     <section id="method" className={`container ${styles.method}`} aria-labelledby="method-title">
-      <SectionHeading id="method-title" number="04" name="method" />
+      <SectionHeading id="method-title" number="05" name="method" />
       <ol className={styles.steps}>
         {STEPS.map((step, index) => (
           <li key={step} className={styles.step}>

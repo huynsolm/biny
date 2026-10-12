@@ -1,0 +1,54 @@
+.career {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding-bottom: var(--space-6);
+}
+
+.list {
+  max-width: 44rem;
+  margin: 0;
+  padding: 0 0 0 var(--space-4);
+  list-style: none;
+  border-left: 1px dashed var(--color-line);
+}
+
+.item {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-1);
+  padding: var(--space-2) 0 var(--space-3);
+}
+
+/* 타임라인 점: 파비콘의 노란 사각형과 같은 모양으로 맞춘다. */
+.item::before {
+  content: "";
+  position: absolute;
+  left: calc(-1 * var(--space-4) - 4px);
+  top: 0.9rem;
+  width: 7px;
+  height: 7px;
+  background: var(--color-accent);
+}
+
+.period {
+  font-size: 0.8125rem;
+  color: var(--color-accent);
+}
+
+.title {
+  font-weight: 500;
+}
+
+.detail {
+  color: var(--color-text-muted);
+  font-size: 0.9375rem;
+}
+
+@media (min-width: 40rem) {
+  .item {
+    grid-template-columns: 8rem minmax(0, 1fr);
+    gap: var(--space-4);
+  }
+}

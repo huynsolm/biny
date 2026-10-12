@@ -1,4 +1,5 @@
 import About from "@/components/About";
+import Career from "@/components/Career";
 import Contact from "@/components/Contact";
 import Hero from "@/components/Hero";
 import Method from "@/components/Method";
@@ -17,8 +18,9 @@ export default function Home() {
     <main id="main">
       <Hero />
       <About />
+      <Career />
       <section id="projects" className={`container ${styles.projects}`} aria-labelledby="projects-title">
-        <SectionHeading id="projects-title" number="02" name="projects" />
+        <SectionHeading id="projects-title" number="03" name="projects" />
         <ProjectList projects={projects} />
       </section>
       <Skills />
