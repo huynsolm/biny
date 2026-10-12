@@ -17,6 +17,8 @@
 }
 
 .brand {
+  display: inline-block;
+  padding: var(--space-2) 0;
   text-decoration: none;
   color: var(--color-text);
 }
@@ -30,9 +32,10 @@
 }
 
 .nav a {
+  display: inline-block;
   color: var(--color-text-muted);
   text-decoration: none;
-  padding: var(--space-1) 0;
+  padding: var(--space-2) 0;
 }
 
 .nav a:hover {

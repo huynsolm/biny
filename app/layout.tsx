@@ -19,6 +19,13 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "김영빈 | 포트폴리오",
   description: "웹 퍼블리셔에서 프론트엔드 개발자로.",
+  // 링크를 메신저나 메일에 붙였을 때 보이는 미리보기 문구. 이미지는 아직 만들지 않는다.
+  openGraph: {
+    title: "김영빈 | 포트폴리오",
+    description: "웹 퍼블리셔에서 프론트엔드 개발자로.",
+    type: "website",
+    locale: "ko_KR",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
