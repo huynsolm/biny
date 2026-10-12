@@ -1,22 +1,23 @@
+import Link from "next/link";
 import styles from "./SiteHeader.module.css";
 
 export default function SiteHeader() {
   return (
     <header className={styles.header}>
       <div className={styles.inner}>
-        <a href="#main" className={styles.brand}>
+        <Link href="/" className={styles.brand}>
           ~/kim-youngbin
-        </a>
+        </Link>
         <nav aria-label="주요 섹션">
           <ul className={styles.nav}>
             <li>
-              <a href="#about">about</a>
+              <Link href="/#about">about</Link>
             </li>
             <li>
-              <a href="#projects">projects</a>
+              <Link href="/#projects">projects</Link>
             </li>
             <li>
-              <a href="#contact">contact</a>
+              <Link href="/#contact">contact</Link>
             </li>
           </ul>
         </nav>

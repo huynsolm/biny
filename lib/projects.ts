@@ -59,9 +59,9 @@ export function getAllProjects(dir: string = DEFAULT_DIR): ProjectMeta[] {
 }
 
 export function getProject(slug: string, dir: string = DEFAULT_DIR): Project | null {
+  // 슬러그는 파일명이므로 영문 소문자, 숫자, 하이픈만 허용한다. "../" 같은 경로 탈출을 막는다.
+  if (!/^[a-z0-9-]+$/.test(slug)) return null;
   const file = path.join(dir, `${slug}.mdx`);
-  if (path.dirname(path.resolve(file)) !== path.resolve(dir) || !fs.existsSync(file)) {
-    return null;
-  }
+  if (!fs.existsSync(file)) return null;
   return parse(file, fs.readFileSync(file, "utf8"));
 }

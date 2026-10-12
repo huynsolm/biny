@@ -1,4 +1,5 @@
 import About from "@/components/About";
+import Contact from "@/components/Contact";
 import Hero from "@/components/Hero";
 import ProjectList from "@/components/ProjectList";
 import { getAllProjects } from "@/lib/projects";
@@ -19,6 +20,7 @@ export default function Home() {
         </h2>
         <ProjectList projects={projects} />
       </section>
+      <Contact />
     </main>
   );
 }
