@@ -18,7 +18,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const project = getProject(slug);
   if (!project) return {};
-  return { title: `${project.meta.title} | 김영빈`, description: project.meta.summary };
+  const title = `${project.meta.title} | 김영빈`;
+  const description = project.meta.summary;
+  // 상세 페이지를 공유했을 때 홈이 아니라 이 프로젝트의 미리보기가 나오도록 openGraph도 따로 지정한다.
+  return { title, description, openGraph: { title, description, type: "website", locale: "ko_KR" } };
 }
 
 export default async function ProjectPage({ params }: Props) {

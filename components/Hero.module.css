@@ -39,3 +39,41 @@
   box-decoration-break: clone;
   -webkit-box-decoration-break: clone;
 }
+
+.name {
+  margin-top: var(--space-4);
+  font-size: 1.125rem;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-3);
+  margin-top: var(--space-3);
+}
+
+.primary,
+.secondary {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  padding: 0 var(--space-4);
+  border: 1px solid var(--color-accent);
+  text-decoration: none;
+  font-size: 0.9375rem;
+}
+
+.primary {
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+}
+
+.secondary {
+  color: var(--color-text);
+}
+
+.primary:hover,
+.secondary:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}

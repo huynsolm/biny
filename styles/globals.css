@@ -86,3 +86,9 @@ pre {
   margin: 0 auto;
   padding: 0 var(--space-3);
 }
+
+/* 코드 블록이 길어도 페이지가 아니라 블록 안에서만 가로로 스크롤되게 한다. */
+pre {
+  max-width: 100%;
+  overflow-x: auto;
+}
