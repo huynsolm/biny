@@ -1,53 +1,31 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import {
-  COMPONENT_TYPES,
-  DEFAULT_VALUES,
-  LIMITS,
-  MAX_CARDS,
-  MIN_CARDS,
-  clampCards,
-  renderHtml,
-  type Card,
-  type CmsValues,
-  type ComponentTypeId,
-} from "@/lib/cms/components";
+import { useRef, useState } from "react";
+import { renderHtml } from "@/lib/cms/format";
 import { buildPreviewDocument } from "@/lib/cms/preview";
+import { CMS_TYPES, getType } from "@/lib/cms/registry";
+import { normalizeValues, type Values } from "@/lib/cms/schema";
+import CmsEditor from "./CmsEditor";
 import styles from "./CmsPreview.module.css";
 
 const COPY_OK = "복사했어요.";
 const COPY_FAIL = "복사하지 못했어요. 소스 창에서 직접 선택해 복사해 주세요.";
 
 export default function CmsPreview() {
-  const [type, setType] = useState<ComponentTypeId>("title");
-  const [values, setValues] = useState<CmsValues>(DEFAULT_VALUES);
+  const [typeId, setTypeId] = useState(CMS_TYPES[0].id);
+  // 타입마다 입력값을 따로 메모리에 둔다. 처음 여는 타입은 기본값으로 시작하고, 타입을 오가도 입력이 남는다.
+  const [store, setStore] = useState<Record<string, Values>>({});
   const [copyMessage, setCopyMessage] = useState("");
   const sourceRef = useRef<HTMLTextAreaElement>(null);
-  const focusRequest = useRef<string | null>(null);
 
-  const fields = COMPONENT_TYPES.find((t) => t.id === type)?.fields ?? [];
-  const cards = clampCards(values.cards);
+  const type = getType(typeId) ?? CMS_TYPES[0];
+  const values = normalizeValues(type.fields, store[type.id] ?? type.defaults);
   const html = renderHtml(type, values);
 
-  // 카드를 지우면 포커스를 갖고 있던 버튼이 사라지므로, 요청된 요소로 포커스를 옮긴다.
-  useEffect(() => {
-    if (focusRequest.current === null) return;
-    document.getElementById(focusRequest.current)?.focus();
-    focusRequest.current = null;
-  });
-
-  function update<K extends keyof CmsValues>(key: K, value: CmsValues[K]) {
+  function handleChange(next: Values) {
     // 입력이 바뀌면 이전에 복사한 소스와 달라지므로 복사 결과 안내를 지운다.
     setCopyMessage("");
-    setValues((prev) => ({ ...prev, [key]: value }));
-  }
-
-  function updateCard(index: number, patch: Partial<Card>) {
-    update(
-      "cards",
-      cards.map((card, i) => (i === index ? { ...card, ...patch } : card)),
-    );
+    setStore((prev) => ({ ...prev, [type.id]: next }));
   }
 
   async function copySource() {
@@ -74,13 +52,13 @@ export default function CmsPreview() {
             <select
               id="cms-type"
               className={styles.control}
-              value={type}
+              value={type.id}
               onChange={(e) => {
-                setType(e.target.value as ComponentTypeId);
+                setTypeId(e.target.value);
                 setCopyMessage("");
               }}
             >
-              {COMPONENT_TYPES.map((t) => (
+              {CMS_TYPES.map((t) => (
                 <option key={t.id} value={t.id}>
                   {t.label}
                 </option>
@@ -88,121 +66,7 @@ export default function CmsPreview() {
             </select>
           </div>
 
-          {fields.includes("imageSrc") && (
-            <div className={styles.field}>
-              <label htmlFor="cms-image-src">이미지 주소</label>
-              <input
-                id="cms-image-src"
-                className={styles.control}
-                type="text"
-                maxLength={LIMITS.imageSrc}
-                value={values.imageSrc}
-                onChange={(e) => update("imageSrc", e.target.value)}
-              />
-              <p className={styles.hint}>
-                샘플 이미지(/images/cms-sample.svg)나 https:// 주소를 쓸 수 있어요. 그 밖의 값은 샘플 이미지로 바뀌어요. 이 사이트의 다른 경로는 소스에는 나오지만 미리보기에서는 불러오지 못할 수 있어요.
-              </p>
-            </div>
-          )}
-
-          {fields.includes("imageAlt") && (
-            <div className={styles.field}>
-              <label htmlFor="cms-image-alt">대체 텍스트</label>
-              <input
-                id="cms-image-alt"
-                className={styles.control}
-                type="text"
-                maxLength={LIMITS.imageAlt}
-                value={values.imageAlt}
-                onChange={(e) => update("imageAlt", e.target.value)}
-              />
-              <p className={styles.hint}>비워 두면 장식 이미지로 처리돼요.</p>
-            </div>
-          )}
-
-          {fields.includes("title") && (
-            <div className={styles.field}>
-              <label htmlFor="cms-title">제목</label>
-              <input
-                id="cms-title"
-                className={styles.control}
-                type="text"
-                maxLength={LIMITS.title}
-                value={values.title}
-                onChange={(e) => update("title", e.target.value)}
-              />
-            </div>
-          )}
-
-          {fields.includes("description") && (
-            <div className={styles.field}>
-              <label htmlFor="cms-description">설명</label>
-              <textarea
-                id="cms-description"
-                className={styles.control}
-                rows={3}
-                maxLength={LIMITS.description}
-                value={values.description}
-                onChange={(e) => update("description", e.target.value)}
-              />
-            </div>
-          )}
-
-          {fields.includes("cards") && (
-            <fieldset className={styles.cards}>
-              <legend className={styles.legend}>카드 ({cards.length}개)</legend>
-              {cards.map((card, index) => (
-                <fieldset key={index} className={styles.card}>
-                  <legend className={styles.legend}>카드 {index + 1}</legend>
-                  <div className={styles.field}>
-                    <label htmlFor={`cms-card-${index}-title`}>카드 {index + 1} 제목</label>
-                    <input
-                      id={`cms-card-${index}-title`}
-                      className={styles.control}
-                      type="text"
-                      maxLength={LIMITS.cardTitle}
-                      value={card.title}
-                      onChange={(e) => updateCard(index, { title: e.target.value })}
-                    />
-                  </div>
-                  <div className={styles.field}>
-                    <label htmlFor={`cms-card-${index}-desc`}>카드 {index + 1} 설명</label>
-                    <textarea
-                      id={`cms-card-${index}-desc`}
-                      className={styles.control}
-                      rows={2}
-                      maxLength={LIMITS.cardDescription}
-                      value={card.description}
-                      onChange={(e) => updateCard(index, { description: e.target.value })}
-                    />
-                  </div>
-                  <button
-                    type="button"
-                    className={styles.button}
-                    disabled={cards.length <= MIN_CARDS}
-                    onClick={() => {
-                      update("cards", cards.filter((_, i) => i !== index));
-                      focusRequest.current = "cms-add-card";
-                    }}
-                  >
-                    카드 {index + 1} 삭제
-                  </button>
-                </fieldset>
-              ))}
-              <button
-                type="button"
-                id="cms-add-card"
-                className={styles.button}
-                disabled={cards.length >= MAX_CARDS}
-                onClick={() => update("cards", [...cards, { title: "", description: "" }])}
-              >
-                카드 추가
-              </button>
-              <p className={styles.hint}>
-                카드는 {MIN_CARDS}개에서 {MAX_CARDS}개까지 만들 수 있어요.
-              </p>
-            </fieldset>
-          )}
+          <CmsEditor key={type.id} fields={type.fields} values={values} onChange={handleChange} />
         </section>
 
         <div className={styles.results}>
@@ -240,7 +104,7 @@ export default function CmsPreview() {
               title="HTML 미리보기"
               className={styles.preview}
               sandbox=""
-              srcDoc={buildPreviewDocument(html)}
+              srcDoc={buildPreviewDocument(html, type.css)}
             />
           </section>
         </div>

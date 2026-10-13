@@ -1,0 +1,173 @@
+"use client";
+
+import { useEffect, useRef, type ReactNode } from "react";
+import {
+  LIMITS,
+  addListItem,
+  maxItems,
+  removeListItem,
+  setAt,
+  type Field,
+  type ListField,
+  type Path,
+  type Values,
+} from "@/lib/cms/schema";
+import styles from "./CmsPreview.module.css";
+
+type Props = {
+  fields: Field[];
+  values: Values;
+  onChange: (next: Values) => void;
+};
+
+const IMAGE_HINT =
+  "샘플 이미지나 https:// 주소를 쓸 수 있어요. 비워 두면 이미지를 넣지 않고, 그 밖의 값은 샘플 이미지로 바뀌어요.";
+
+function readString(scope: Values, key: string): string {
+  const value = scope[key];
+  return typeof value === "string" ? value : "";
+}
+
+function readItems(scope: Values, key: string): Values[] {
+  const value = scope[key];
+  return Array.isArray(value) ? value : [];
+}
+
+// 입력 정의(fields)를 읽어 폼을 그린다. 타입이 달라도 이 편집기 하나가 맡는다.
+export default function CmsEditor({ fields, values, onChange }: Props) {
+  const focusRequest = useRef<string | null>(null);
+
+  // 항목을 지우면 포커스를 갖고 있던 버튼이 사라지므로, 요청된 요소(해당 목록의 "추가" 버튼)로 포커스를 옮긴다.
+  useEffect(() => {
+    if (focusRequest.current === null) return;
+    document.getElementById(focusRequest.current)?.focus();
+    focusRequest.current = null;
+  });
+
+  function renderList(field: ListField, scope: Values, path: Path, id: string, labelPrefix: string): ReactNode {
+    const listPath: Path = [...path, field.key];
+    const depth = listPath.length - 1;
+    const items = readItems(scope, field.key);
+    const addId = `${id}-add`;
+    return (
+      <fieldset key={field.key} className={styles.cards}>
+        <legend className={styles.legend}>
+          {labelPrefix}
+          {field.label} ({items.length}개)
+        </legend>
+        {items.map((item, index) => {
+          const itemLabel = `${field.itemLabel} ${index + 1}`;
+          return (
+            <fieldset key={index} className={styles.card}>
+              <legend className={styles.legend}>{itemLabel}</legend>
+              {renderFields(field.fields, item, [...listPath, index], `${labelPrefix}${itemLabel} `)}
+              <button
+                type="button"
+                className={styles.button}
+                disabled={items.length <= field.min}
+                onClick={() => {
+                  onChange(removeListItem(values, listPath, index, field));
+                  focusRequest.current = addId;
+                }}
+              >
+                {labelPrefix}
+                {itemLabel} 삭제
+              </button>
+            </fieldset>
+          );
+        })}
+        <button
+          type="button"
+          id={addId}
+          className={styles.button}
+          disabled={items.length >= maxItems(field, depth)}
+          onClick={() => onChange(addListItem(values, listPath, field))}
+        >
+          {labelPrefix}
+          {field.itemLabel} 추가
+        </button>
+        <p className={styles.hint}>
+          {field.itemLabel}은(는) {field.min}개에서 {maxItems(field, depth)}개까지 만들 수 있어요.
+        </p>
+      </fieldset>
+    );
+  }
+
+  function renderFields(list: Field[], scope: Values, path: Path, labelPrefix: string): ReactNode {
+    return list.map((field) => {
+      const fieldPath: Path = [...path, field.key];
+      const id = `cms-${fieldPath.join("-")}`;
+      const label = `${labelPrefix}${field.label}`;
+      const set = (value: string) => onChange(setAt(values, fieldPath, value));
+
+      switch (field.kind) {
+        case "text":
+          return (
+            <div key={field.key} className={styles.field}>
+              <label htmlFor={id}>{label}</label>
+              <input
+                id={id}
+                className={styles.control}
+                type="text"
+                maxLength={field.key === "small" || field.key === "big" ? LIMITS.titlePart : LIMITS.text}
+                value={readString(scope, field.key)}
+                onChange={(e) => set(e.target.value)}
+              />
+            </div>
+          );
+        case "rich":
+          return (
+            <div key={field.key} className={styles.field}>
+              <label htmlFor={id}>{label}</label>
+              <textarea
+                id={id}
+                className={styles.control}
+                rows={3}
+                maxLength={LIMITS.rich}
+                value={readString(scope, field.key)}
+                onChange={(e) => set(e.target.value)}
+              />
+              <p className={styles.hint}>&lt;em&gt;, &lt;strong&gt;, &lt;b&gt;, &lt;i&gt;, &lt;br&gt;만 쓸 수 있어요.</p>
+            </div>
+          );
+        case "image":
+          return (
+            <div key={field.key} className={styles.field}>
+              <label htmlFor={id}>{label}</label>
+              <input
+                id={id}
+                className={styles.control}
+                type="text"
+                maxLength={LIMITS.image}
+                value={readString(scope, field.key)}
+                onChange={(e) => set(e.target.value)}
+              />
+              <p className={styles.hint}>{IMAGE_HINT}</p>
+            </div>
+          );
+        case "select":
+          return (
+            <div key={field.key} className={styles.field}>
+              <label htmlFor={id}>{label}</label>
+              <select
+                id={id}
+                className={styles.control}
+                value={readString(scope, field.key)}
+                onChange={(e) => set(e.target.value)}
+              >
+                {field.options.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          );
+        case "list":
+          return renderList(field, scope, path, id, labelPrefix);
+      }
+    });
+  }
+
+  return <>{renderFields(fields, values, [], "")}</>;
+}

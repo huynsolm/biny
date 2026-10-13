@@ -1,3 +1,8 @@
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import { normalizeValues, type Values } from "./schema";
+import type { CmsType } from "./type";
+
 type TextNode = { kind: "text"; text: string };
 type ElementNode = {
   kind: "element";
@@ -74,4 +79,13 @@ export function formatHtml(markup: string): string {
   return parse(markup)
     .flatMap((node) => toLines(node, 0))
     .join("\n");
+}
+
+// 값을 한도에 맞게 정리한 뒤 타입의 View를 HTML로 바꾸고, 읽기 좋게 들여쓴다. 소스 창과 미리보기가 이 문자열을 같이 쓴다.
+export function renderHtml(type: CmsType, values: Values): string {
+  const normalized = normalizeValues(type.fields, values);
+  const markup = renderToStaticMarkup(createElement(type.View, { values: normalized }));
+  // React 19는 <img>를 보면 결과 맨 앞에 이미지 미리 불러오기 힌트(<link rel="preload" ...>)를 붙인다.
+  // 사용자가 복사해 가는 CMS 소스에는 필요 없으므로, 맨 앞에 붙은 <link>만 떼어 낸다.
+  return formatHtml(markup.replace(/^(?:<link\b[^>]*>)+/, ""));
 }

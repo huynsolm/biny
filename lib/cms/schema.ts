@@ -36,7 +36,7 @@ function str(value: unknown, max: number): string {
 }
 
 // 맨 위 목록은 listItems, 목록 안의 목록은 subItems가 상한이다. 정의의 max가 더 커도 이 값을 넘지 않는다.
-function listMax(list: ListField, depth: number): number {
+export function maxItems(list: ListField, depth: number): number {
   return Math.min(list.max, depth === 0 ? LIMITS.listItems : LIMITS.subItems);
 }
 
@@ -61,7 +61,7 @@ function normalizeAt(fields: Field[], values: unknown, depth: number): Values {
         break;
       case "list": {
         const given = Array.isArray(value) ? value : [];
-        const kept = given.slice(0, listMax(field, depth)).map((item) => normalizeAt(field.fields, item, depth + 1));
+        const kept = given.slice(0, maxItems(field, depth)).map((item) => normalizeAt(field.fields, item, depth + 1));
         while (kept.length < field.min) kept.push(normalizeAt(field.fields, {}, depth + 1));
         out[field.key] = kept;
         break;
@@ -120,7 +120,7 @@ function itemsAt(values: Values, path: Path): Values[] {
 
 export function addListItem(values: Values, path: Path, list: ListField): Values {
   const items = itemsAt(values, path);
-  if (items.length >= listMax(list, path.length - 1)) return values;
+  if (items.length >= maxItems(list, path.length - 1)) return values;
   return setAt(values, path, [...items, emptyItem(list)]);
 }
 

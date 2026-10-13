@@ -21,7 +21,7 @@ export default function CmsPreviewPage() {
     >
       <h1>CMS 컴포넌트 미리보기</h1>
       <p>샘플 데이터예요. 서버에 저장되지 않고, 개인이 만든 데모예요.</p>
-      <p>타입은 3개만 담은 작은 데모예요.</p>
+      <p>타입을 하나씩 늘려 가는 중인 데모예요.</p>
       <CmsPreview />
       <Link href="/">처음으로 돌아가기</Link>
     </main>
