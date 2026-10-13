@@ -159,3 +159,26 @@ textarea.control {
     align-items: start;
   }
 }
+
+.tableScroll {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.tableGrid {
+  display: grid;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.axis {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.tableActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}

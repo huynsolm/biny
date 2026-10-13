@@ -526,3 +526,71 @@ describe("type 25", () => {
     expect(html).not.toContain('<p class="demo-title"></p>');
   });
 });
+
+describe("type 26", () => {
+  const cell = (value: string, extra: Record<string, unknown> = {}) => ({ value, colspan: 1, rowspan: 1, hidden: false, ...extra });
+  const table = (rows: ReturnType<typeof cell>[][], headers = [[cell("머리글")]], colWidths = ["auto"]) => ({ headers, rows, colWidths });
+  const renderTable = (t: unknown, extra: Values = {}) => render("type26", { table: t as never, ...extra });
+
+  test("renders a nested table with colgroup, header and body", () => {
+    const html = render("type26");
+    expect(html).toContain('class="demo-block demo-type26"');
+    expect(html).toContain('class="demo-table"');
+    for (const tag of ["<table", "<colgroup", "<thead", "<tbody"]) expect(html, tag).toContain(tag);
+    expect(html.match(/<col /g)?.length).toBe(3);
+  });
+
+  test("uses th for header cells and the first body column, td for the rest", () => {
+    const html = renderTable(table([[cell("행"), cell("값")]], [[cell("구분"), cell("항목")]], ["auto", "auto"]));
+    expect(html).toContain('<th scope="col">구분</th>');
+    expect(html).toContain('<th scope="row">행</th>');
+    expect(html).toContain("<td>값</td>");
+  });
+
+  test("renders colspan and rowspan attributes only when above 1", () => {
+    const html = renderTable(table([[cell("a", { colspan: 2, rowspan: 2 }), cell("b"), cell("c")], [cell("d"), cell("e"), cell("f")]], [[cell("h1"), cell("h2"), cell("h3")]], ["auto", "auto", "auto"]));
+    expect(html).toMatch(/colSpan="2"/i);
+    expect(html).toMatch(/rowSpan="2"/i);
+    expect(html.match(/colSpan=/gi)?.length).toBe(1);
+  });
+
+  test("omits cells hidden by a merge", () => {
+    const html = renderTable(table([[cell("a", { colspan: 3 }), cell("hidden1"), cell("hidden2")]], [[cell("h1"), cell("h2"), cell("h3")]], ["auto", "auto", "auto"]));
+    expect(html).not.toContain("hidden1");
+    expect(html).not.toContain("hidden2");
+  });
+
+  test("never trusts a hidden flag that has no merge behind it", () => {
+    const html = renderTable(table([[cell("a"), cell("shown", { hidden: true })]], [[cell("h1"), cell("h2")]], ["auto", "auto"]));
+    expect(html).toContain("shown");
+  });
+
+  test("escapes script and tags in cells", () => {
+    const html = renderTable(table([[cell("<script>alert(1)</script>"), cell("<em>x</em>")]], [[cell("<img src=x onerror=1>"), cell("h")]], ["auto", "auto"]));
+    expect(html.toLowerCase()).not.toContain("<script");
+    expect(html).not.toContain("<em>");
+    expect(html).not.toMatch(/<img[^>]*onerror/i);
+    expect(html).toContain("&lt;script&gt;");
+  });
+
+  test("applies safe column widths and drops unsafe ones", () => {
+    const html = renderTable(table([[cell("a"), cell("b")]], [[cell("h1"), cell("h2")]], ["30%", "expression(alert(1))"]));
+    expect(html).toContain("width:30%");
+    expect(html).not.toContain("expression");
+    expect(html).toContain("width:auto");
+  });
+
+  test("shows the intro text only when it is not empty, and it is rich", () => {
+    expect(count(render("type26", { text: "" }), "demo-description-box")).toBe(0);
+    const html = render("type26", { text: "<em>ok</em><script>x</script>" });
+    expect(count(html, "demo-description-box")).toBe(1);
+    expect(html).toContain("<em>ok</em>");
+    expect(html.toLowerCase()).not.toContain("<script");
+  });
+
+  test("the formatted source nests the table rows on separate lines", () => {
+    const html = render("type26");
+    expect(html).toMatch(/\n\s+<thead>\n\s+<tr>\n\s+<th scope="col">/);
+    expect(html).toMatch(/\n\s+<tbody>\n\s+<tr>/);
+  });
+});

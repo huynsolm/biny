@@ -1,15 +1,21 @@
 "use client";
 
-import { useEffect, useRef, type ReactNode } from "react";
+import { Fragment, useEffect, useRef, type ReactNode } from "react";
 import {
   LIMITS,
   addListItem,
+  addTableCol,
+  addTableRow,
   maxItems,
   removeListItem,
+  removeTableCol,
+  removeTableRow,
   setAt,
   type Field,
   type ListField,
   type Path,
+  type TableField,
+  type TableValue,
   type Values,
 } from "@/lib/cms/schema";
 import styles from "./CmsPreview.module.css";
@@ -32,6 +38,16 @@ function readItems(scope: Values, key: string): Values[] {
   const value = scope[key];
   return Array.isArray(value) ? value : [];
 }
+
+function readTable(scope: Values, key: string): TableValue | null {
+  const value = scope[key];
+  return typeof value === "object" && value !== null && !Array.isArray(value) && "rows" in value
+    ? (value as TableValue)
+    : null;
+}
+
+const TABLE_HINT =
+  "열 너비는 auto, 30%, 120px처럼 적어요. 행과 열은 맨 끝에서만 추가하고 지울 수 있고, 칸 병합은 이 데모에서 만들 수 없어요.";
 
 // 입력 정의(fields)를 읽어 폼을 그린다. 타입이 달라도 이 편집기 하나가 맡는다.
 export default function CmsEditor({ fields, values, onChange }: Props) {
@@ -116,6 +132,124 @@ export default function CmsEditor({ fields, values, onChange }: Props) {
     );
   }
 
+  function renderTable(field: TableField, scope: Values, path: Path, id: string, labelPrefix: string): ReactNode {
+    const table = readTable(scope, field.key);
+    if (!table) return null;
+    const tablePath: Path = [...path, field.key];
+    const cols = table.colWidths.length;
+    const addRowId = `${id}-add-row`;
+    const addColId = `${id}-add-col`;
+    const setValue = (part: "headers" | "rows", r: number, c: number, text: string) =>
+      onChange(setAt(values, [...tablePath, part, r, c, "value"], text));
+
+    return (
+      <fieldset key={field.key} className={styles.cards}>
+        <legend className={styles.legend}>
+          {labelPrefix}
+          {field.label} ({table.rows.length}행 {cols}열)
+        </legend>
+        <div className={styles.tableScroll}>
+          <div
+            className={styles.tableGrid}
+            style={{ gridTemplateColumns: `4.5rem repeat(${cols}, minmax(7rem, 1fr))` }}
+          >
+            <span />
+            {table.colWidths.map((_, c) => (
+              <span key={c} className={styles.axis}>
+                열 {c + 1}
+              </span>
+            ))}
+            <span className={styles.axis}>머리글</span>
+            {(table.headers[0] ?? []).map((cell, c) => (
+              <input
+                key={c}
+                className={styles.control}
+                type="text"
+                aria-label={`머리글 열 ${c + 1}`}
+                maxLength={LIMITS.tableCell}
+                value={cell.value}
+                onChange={(e) => setValue("headers", 0, c, e.target.value)}
+              />
+            ))}
+            {table.rows.map((row, r) => (
+              <Fragment key={r}>
+                <span className={styles.axis}>행 {r + 1}</span>
+                {row.map((cell, c) => (
+                  <input
+                    key={c}
+                    className={styles.control}
+                    type="text"
+                    aria-label={`행 ${r + 1} 열 ${c + 1}`}
+                    maxLength={LIMITS.tableCell}
+                    value={cell.value}
+                    onChange={(e) => setValue("rows", r, c, e.target.value)}
+                  />
+                ))}
+              </Fragment>
+            ))}
+            <span className={styles.axis}>열 너비</span>
+            {table.colWidths.map((width, c) => (
+              <input
+                key={c}
+                className={styles.control}
+                type="text"
+                aria-label={`열 ${c + 1} 너비`}
+                maxLength={8}
+                value={width}
+                onChange={(e) => onChange(setAt(values, [...tablePath, "colWidths", c], e.target.value))}
+              />
+            ))}
+          </div>
+        </div>
+        <div className={styles.tableActions}>
+          <button
+            type="button"
+            id={addRowId}
+            className={styles.button}
+            disabled={table.rows.length >= LIMITS.tableRows}
+            onClick={() => onChange(addTableRow(values, tablePath))}
+          >
+            행 추가
+          </button>
+          <button
+            type="button"
+            className={styles.button}
+            disabled={table.rows.length <= 1}
+            onClick={() => {
+              onChange(removeTableRow(values, tablePath));
+              focusRequest.current = addRowId;
+            }}
+          >
+            마지막 행 삭제
+          </button>
+          <button
+            type="button"
+            id={addColId}
+            className={styles.button}
+            disabled={cols >= LIMITS.tableCols}
+            onClick={() => onChange(addTableCol(values, tablePath))}
+          >
+            열 추가
+          </button>
+          <button
+            type="button"
+            className={styles.button}
+            disabled={cols <= 1}
+            onClick={() => {
+              onChange(removeTableCol(values, tablePath));
+              focusRequest.current = addColId;
+            }}
+          >
+            마지막 열 삭제
+          </button>
+        </div>
+        <p className={styles.hint}>
+          {TABLE_HINT} 표는 최대 {LIMITS.tableRows}행, {LIMITS.tableCols}열까지예요.
+        </p>
+      </fieldset>
+    );
+  }
+
   function renderFields(list: Field[], scope: Values, path: Path, labelPrefix: string): ReactNode {
     return list.map((field) => {
       const fieldPath: Path = [...path, field.key];
@@ -188,6 +322,8 @@ export default function CmsEditor({ fields, values, onChange }: Props) {
           );
         case "list":
           return renderList(field, scope, path, id, labelPrefix);
+        case "table":
+          return renderTable(field, scope, path, id, labelPrefix);
       }
     });
   }

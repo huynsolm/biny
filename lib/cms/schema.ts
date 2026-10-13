@@ -1,6 +1,10 @@
 export type Path = (string | number)[];
 
-export type FieldValue = string | Values[];
+// 표의 칸. 병합(colspan, rowspan)을 지원하며, hidden은 다른 칸에 덮여 그리지 않는 칸이다.
+export type TableCell = { value: string; colspan: number; rowspan: number; hidden: boolean };
+export type TableValue = { headers: TableCell[][]; rows: TableCell[][]; colWidths: string[] };
+
+export type FieldValue = string | Values[] | TableValue;
 export type Values = { [key: string]: FieldValue };
 
 type FieldBase = { key: string; label: string };
@@ -15,7 +19,8 @@ export type ListField = FieldBase & {
   max: number;
   fields: Field[];
 };
-export type Field = TextField | RichField | ImageField | SelectField | ListField;
+export type TableField = FieldBase & { kind: "table" };
+export type Field = TextField | RichField | ImageField | SelectField | ListField | TableField;
 
 // 입력 한도. 편집기는 maxLength로, normalizeValues는 같은 값으로 자른다.
 export const LIMITS = {
@@ -25,6 +30,9 @@ export const LIMITS = {
   image: 200,
   listItems: 12,
   subItems: 8,
+  tableRows: 10,
+  tableCols: 6,
+  tableCell: 100,
 };
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -39,6 +47,95 @@ function str(value: unknown, max: number): string {
 export function maxItems(list: ListField, depth: number): number {
   return Math.min(list.max, depth === 0 ? LIMITS.listItems : LIMITS.subItems);
 }
+
+// ---- 표 ----
+
+function emptyCell(): TableCell {
+  return { value: "", colspan: 1, rowspan: 1, hidden: false };
+}
+
+function toSpan(value: unknown): number {
+  return typeof value === "number" && Number.isFinite(value) ? Math.max(1, Math.floor(value)) : 1;
+}
+
+function readCell(raw: unknown): TableCell {
+  const cell = isRecord(raw) ? raw : {};
+  return { value: str(cell.value, LIMITS.tableCell), colspan: toSpan(cell.colspan), rowspan: toSpan(cell.rowspan), hidden: false };
+}
+
+// style="width:…"에 들어가는 값이라 허용 형식만 남긴다: auto, 숫자(px로 보정), 숫자+px/%/rem.
+const SAFE_WIDTH = /^(?:auto|\d{1,4}(?:\.\d{1,2})?(?:px|%|rem)?)$/;
+
+function safeWidth(value: unknown): string {
+  if (typeof value !== "string") return "auto";
+  const width = value.trim();
+  if (!SAFE_WIDTH.test(width)) return "auto";
+  return /^\d+(?:\.\d+)?$/.test(width) ? `${width}px` : width;
+}
+
+function asRows(value: unknown): unknown[][] {
+  return Array.isArray(value) ? value.map((row) => (Array.isArray(row) ? row : [])) : [];
+}
+
+function padGrid(rows: unknown[][], cols: number, minRows: number): TableCell[][] {
+  const kept = rows.slice(0, LIMITS.tableRows);
+  while (kept.length < minRows) kept.push([]);
+  return kept.map((row) => Array.from({ length: cols }, (_, c) => (c < row.length ? readCell(row[c]) : emptyCell())));
+}
+
+// 병합 범위를 표 안으로 맞추고, 다른 병합과 겹치지 않게 줄이고, hidden을 병합 범위에서 다시 계산한다.
+// 입력의 hidden은 믿지 않는다. 칸을 왼쪽 위부터 차례로 보며 이미 덮인 칸은 병합 값을 버린다.
+function resolveSpans(grid: TableCell[][], cols: number): TableCell[][] {
+  const rowCount = grid.length;
+  const covered = grid.map(() => Array.from({ length: cols }, () => false));
+  const out = grid.map((row) => row.map((cell) => ({ ...cell })));
+
+  for (let r = 0; r < rowCount; r++) {
+    for (let c = 0; c < cols; c++) {
+      const cell = out[r][c];
+      if (covered[r][c]) {
+        out[r][c] = { value: cell.value, colspan: 1, rowspan: 1, hidden: true };
+        continue;
+      }
+      let colspan = Math.min(cell.colspan, cols - c);
+      let run = 1;
+      while (run < colspan && !covered[r][c + run]) run++;
+      colspan = run;
+
+      let rowspan = Math.min(cell.rowspan, rowCount - r);
+      let depth = 1;
+      while (depth < rowspan) {
+        let free = true;
+        for (let x = c; x < c + colspan; x++) if (covered[r + depth][x]) free = false;
+        if (!free) break;
+        depth++;
+      }
+      rowspan = depth;
+
+      for (let y = r; y < r + rowspan; y++) {
+        for (let x = c; x < c + colspan; x++) if (y !== r || x !== c) covered[y][x] = true;
+      }
+      out[r][c] = { value: cell.value, colspan, rowspan, hidden: false };
+    }
+  }
+  return out;
+}
+
+function normalizeTable(raw: unknown): TableValue {
+  const source = isRecord(raw) ? raw : {};
+  const headerRows = asRows(source.headers);
+  const bodyRows = asRows(source.rows);
+  const widest = Math.max(1, ...headerRows.map((row) => row.length), ...bodyRows.map((row) => row.length));
+  const cols = Math.min(widest, LIMITS.tableCols);
+  const given = Array.isArray(source.colWidths) ? source.colWidths : [];
+  return {
+    headers: resolveSpans(padGrid(headerRows, cols, 1), cols),
+    rows: resolveSpans(padGrid(bodyRows, cols, 1), cols),
+    colWidths: Array.from({ length: cols }, (_, i) => safeWidth(given[i])),
+  };
+}
+
+// ---- 값 정리 ----
 
 function normalizeAt(fields: Field[], values: unknown, depth: number): Values {
   const source = isRecord(values) ? values : {};
@@ -66,6 +163,9 @@ function normalizeAt(fields: Field[], values: unknown, depth: number): Values {
         out[field.key] = kept;
         break;
       }
+      case "table":
+        out[field.key] = normalizeTable(value);
+        break;
     }
   }
   return out;
@@ -128,4 +228,48 @@ export function removeListItem(values: Values, path: Path, index: number, list: 
   const items = itemsAt(values, path);
   if (items.length <= list.min || index < 0 || index >= items.length) return values;
   return setAt(values, path, items.filter((_, i) => i !== index));
+}
+
+// ---- 표의 행/열 추가·삭제 (맨 끝에서만) ----
+
+function tableAt(values: Values, path: Path): TableValue | null {
+  const found = getAt(values, path);
+  return isRecord(found) && Array.isArray(found.headers) && Array.isArray(found.rows) ? (found as unknown as TableValue) : null;
+}
+
+function columnCount(table: TableValue): number {
+  return table.rows[0]?.length ?? table.headers[0]?.length ?? 1;
+}
+
+export function addTableRow(values: Values, path: Path): Values {
+  const table = tableAt(values, path);
+  if (!table || table.rows.length >= LIMITS.tableRows) return values;
+  const row = Array.from({ length: columnCount(table) }, emptyCell);
+  return setAt(values, path, { ...table, rows: [...table.rows, row] });
+}
+
+export function removeTableRow(values: Values, path: Path): Values {
+  const table = tableAt(values, path);
+  if (!table || table.rows.length <= 1) return values;
+  return setAt(values, path, { ...table, rows: table.rows.slice(0, -1) });
+}
+
+export function addTableCol(values: Values, path: Path): Values {
+  const table = tableAt(values, path);
+  if (!table || columnCount(table) >= LIMITS.tableCols) return values;
+  return setAt(values, path, {
+    headers: table.headers.map((row) => [...row, emptyCell()]),
+    rows: table.rows.map((row) => [...row, emptyCell()]),
+    colWidths: [...table.colWidths, "auto"],
+  });
+}
+
+export function removeTableCol(values: Values, path: Path): Values {
+  const table = tableAt(values, path);
+  if (!table || columnCount(table) <= 1) return values;
+  return setAt(values, path, {
+    headers: table.headers.map((row) => row.slice(0, -1)),
+    rows: table.rows.map((row) => row.slice(0, -1)),
+    colWidths: table.colWidths.slice(0, -1),
+  });
 }
