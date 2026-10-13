@@ -49,6 +49,29 @@ export default function CmsEditor({ fields, values, onChange }: Props) {
     const depth = listPath.length - 1;
     const items = readItems(scope, field.key);
     const addId = `${id}-add`;
+
+    // 개수가 정해진 목록(제목처럼 최소 = 최대)은 추가/삭제 버튼과 안내 없이 필드만 보여 준다.
+    if (field.min === field.max) {
+      return (
+        <fieldset key={field.key} className={styles.cards}>
+          <legend className={styles.legend}>
+            {labelPrefix}
+            {field.label}
+          </legend>
+          {items.map((item, index) => (
+            <div key={index}>
+              {renderFields(
+                field.fields,
+                item,
+                [...listPath, index],
+                `${labelPrefix}${field.itemLabel}${items.length > 1 ? ` ${index + 1}` : ""} `,
+              )}
+            </div>
+          ))}
+        </fieldset>
+      );
+    }
+
     return (
       <fieldset key={field.key} className={styles.cards}>
         <legend className={styles.legend}>

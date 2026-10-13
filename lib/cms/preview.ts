@@ -6,6 +6,14 @@ export const BASE_CSS = `
   * { box-sizing: border-box; }
   body { margin: 0; padding: 16px; background: #ffffff; color: #1d2733; font: 16px/1.6 system-ui, sans-serif; }
   img { max-width: 100%; height: auto; }
+  .demo-inner { display: flex; flex-direction: column; gap: 24px; }
+  .demo-header { padding-top: 12px; border-top: 2px solid #1d2733; }
+  .demo-eyebrow { margin: 0 0 4px; font-size: 0.875rem; font-weight: 600; color: #3a6ea5; }
+  .demo-title { margin: 0; font-size: 1.5rem; line-height: 1.3; }
+  .demo-desc { margin: 0; color: #4a5766; }
+  .demo-visual img { width: 100%; height: auto; }
+  .demo-list-item { margin: 0; }
+  ol, ul { margin: 0; padding: 0; list-style: none; }
   .demo-block { margin: 0 0 16px; padding: 24px; border: 1px solid #d5dce4; }
   .demo-pc-only { display: none; }
   .demo-mobile-only { display: block; }

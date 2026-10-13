@@ -21,7 +21,8 @@ const type01: CmsType = {
     description: "입력한 내용이 HTML 소스와 미리보기에 바로 반영돼요.",
   },
   css: `
-    .demo-type01 .demo-inner { display: flex; flex-direction: column; gap: 16px; }
+    .demo-type01 .demo-inner { gap: 16px; }
+    .demo-type01 .demo-header { padding-top: 0; border-top: 0; }
     .demo-type01 .demo-title { margin: 0; font-size: 1.5rem; font-weight: 300; line-height: 1.3; }
     .demo-type01 .demo-visual img { width: 100%; height: auto; }
     .demo-type01 .demo-desc { margin: 0; font-size: 1.0625rem; color: #4a5766; }
