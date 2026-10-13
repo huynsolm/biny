@@ -1,8 +1,8 @@
 import { items, richProps, str, type CmsType } from "../type";
-import { Pictures, TitleBlock, imageDefaults, imageFields, listField, titleDefault, titleField } from "./parts";
+import { CmsHeader, Img, imageDefaults, imageFields, listField, titleDefault, titleField } from "./parts";
 
-// 원본 타입 24: 이미지 한 장 아래에 번호가 붙은 목록. 항목마다 제목과 설명이 있고 비어 있으면 넣지 않는다.
-// 번호는 CSS 카운터로 붙인다.
+// 원본 타입 24와 같은 HTML을 만든다: 이미지 한 장 아래에 번호가 붙은 목록. 항목마다 제목과 설명이 있고 비어 있으면 넣지 않는다.
+// 번호는 CSS 카운터로 붙인다. 이 타입만 모바일 이미지가 PC 이미지와 따로 보인다(원본 그대로).
 const type24: CmsType = {
   id: "type24",
   number: "24",
@@ -21,25 +21,27 @@ const type24: CmsType = {
     contents: [1, 2, 3].map((n) => ({ tit: `항목 ${n} 제목`, text: "설명을 입력해 보세요." })),
   },
   css: `
-    .demo-type24 { background: #eef3f9; }
-    .demo-type24 .demo-ordered-list { counter-reset: demo-order; display: flex; flex-direction: column; gap: 16px; }
-    .demo-type24 .demo-ordered-list .demo-list-item { counter-increment: demo-order; display: flex; gap: 14px; align-items: flex-start; }
-    .demo-type24 .demo-ordered-list .demo-list-item::before { content: counter(demo-order); flex: none; display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; background: #3a6ea5; color: #ffffff; font-size: 0.875rem; font-weight: 600; }
-    .demo-type24 .demo-description-box { display: flex; flex-direction: column; gap: 2px; }
-    .demo-type24 .demo-description-box .demo-title { font-size: 1.0625rem; }
+    .type24 .cms-ordered-list { counter-reset: cms-order; display: flex; flex-direction: column; gap: 16px; }
+    .type24 .cms-ordered-list .cms-list-item { counter-increment: cms-order; display: flex; gap: 14px; align-items: flex-start; }
+    .type24 .cms-ordered-list .cms-list-item::before { content: counter(cms-order); flex: none; display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; background: #3a6ea5; color: #ffffff; font-size: 0.875rem; font-weight: 600; }
+    .type24 .cms-description-box { display: flex; flex-direction: column; gap: 2px; }
+    .type24 .cms-description-box .cms-title { font-size: 1.0625rem; }
   `,
   View: ({ values }) => (
-    <section className="demo-block demo-type24">
-      <div className="demo-inner">
-        <TitleBlock values={values} />
-        <Pictures image={values.image} imageMobile={values.imageMobile} />
-        <div className="demo-list-wrap">
-          <ol className="demo-ordered-list">
+    <section className="cms type24 type-bg bg-color-2">
+      <div className="cms-inner">
+        <CmsHeader values={values} />
+        <div className="cms-visual">
+          <Img value={values.image} kind="pc" className="img-fluid d-none d-lg-block" />
+          <Img value={values.imageMobile} kind="mobile" className="w-100 d-block d-lg-none" />
+        </div>
+        <div className="cms-list-wrap cms-desktop-rs-only">
+          <ol className="cms-ordered-list">
             {items(values.contents).map((item, index) => (
-              <li key={index} className="demo-list-item">
-                <div className="demo-description-box">
-                  {str(item.tit).trim() !== "" && <p className="demo-title" {...richProps(item.tit)} />}
-                  {str(item.text).trim() !== "" && <p className="demo-desc" {...richProps(item.text)} />}
+              <li key={index} className="cms-list-item">
+                <div className="cms-description-box">
+                  {str(item.tit).trim() !== "" && <p className="cms-title" {...richProps(item.tit)} />}
+                  {str(item.text).trim() !== "" && <p className="cms-description" {...richProps(item.text)} />}
                 </div>
               </li>
             ))}

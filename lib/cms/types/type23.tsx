@@ -1,7 +1,8 @@
 import { richProps, str, type CmsType } from "../type";
-import { Pictures, TitleBlock, imageDefaults, imageFields, titleDefault, titleField } from "./parts";
+import { CmsHeader, Img, imageDefaults, imageFields, titleDefault, titleField } from "./parts";
 
-// 원본 타입 23: 제목 아래 가운데 정렬 글(있으면)과 이미지 한 장. 큰 제목이나 글이 비어 있으면 넣지 않는다.
+// 원본 타입 23과 같은 HTML을 만든다: 제목 아래 가운데 정렬 글(있으면)과 이미지 한 장. 큰 제목이나 글이 비어 있으면 넣지 않는다.
+// 원본은 모바일 이미지를 PC 이미지가 있을 때만 보여 준다.
 const type23: CmsType = {
   id: "type23",
   number: "23",
@@ -13,19 +14,26 @@ const type23: CmsType = {
     ...imageDefaults,
   },
   css: `
-    .demo-type23 .demo-center { text-align: center; }
-    .demo-type23 .demo-center .demo-desc { font-size: 1.0625rem; }
+    .type23 .text-center .cms-description { font-size: 1.0625rem; }
   `,
   View: ({ values }) => (
-    <section className="demo-block demo-type23">
-      <div className="demo-inner">
-        <TitleBlock values={values} />
+    <section className="cms type23">
+      <div className="cms-inner">
+        <CmsHeader values={values} hideEmptyBig />
         {str(values.text).trim() !== "" && (
-          <div className="demo-description-box demo-center">
-            <p className="demo-desc" {...richProps(values.text)} />
+          <div className="cms-description-box text-center">
+            <p className="cms-description" {...richProps(values.text)} />
           </div>
         )}
-        <Pictures image={values.image} imageMobile={values.imageMobile} />
+        <div className="cms-visual">
+          <Img value={values.image} kind="pc" className="img-fluid d-none d-lg-block" />
+          <Img
+            value={values.imageMobile}
+            kind="mobile"
+            className="w-100 d-block d-lg-none"
+            gate={str(values.image).trim() !== ""}
+          />
+        </div>
       </div>
     </section>
   ),

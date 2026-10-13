@@ -3,17 +3,17 @@ import { BASE_CSS, buildPreviewDocument } from "@/lib/cms/preview";
 
 describe("buildPreviewDocument", () => {
   test("embeds the html unchanged inside body", () => {
-    const html = '<section class="demo-block demo-type01">\n  <p class="demo-title">제목</p>\n</section>';
+    const html = '<section class="cms type01">\n  <p class="cms-title">제목</p>\n</section>';
     const doc = buildPreviewDocument(html, "");
     const body = doc.slice(doc.indexOf("<body>") + "<body>".length, doc.lastIndexOf("</body>"));
     expect(body.trim()).toBe(html);
   });
 
   test("includes the base css and the given css", () => {
-    const doc = buildPreviewDocument("<p>x</p>", ".demo-type99 { color: red; }");
+    const doc = buildPreviewDocument("<p>x</p>", ".type99 { color: red; }");
     expect(doc).toContain(BASE_CSS.trim().slice(0, 20));
-    expect(doc).toContain(".demo-type99 { color: red; }");
-    expect(doc.indexOf(BASE_CSS.trim().slice(0, 20))).toBeLessThan(doc.indexOf(".demo-type99"));
+    expect(doc).toContain(".type99 { color: red; }");
+    expect(doc.indexOf(BASE_CSS.trim().slice(0, 20))).toBeLessThan(doc.indexOf(".type99"));
   });
 
   test("replaces both sample sources with data URIs so the sandboxed preview does not depend on same-site loading", () => {
@@ -59,5 +59,12 @@ describe("buildPreviewDocument", () => {
       expect(BASE_CSS, token).toContain(token);
     }
     expect(BASE_CSS).toContain("min-width: 992px");
+  });
+});
+
+describe("BASE_CSS", () => {
+  test("uses only the original class names, no demo- names", () => {
+    expect(BASE_CSS).not.toContain("demo-");
+    expect(BASE_CSS).toContain(".cms-header");
   });
 });

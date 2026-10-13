@@ -34,27 +34,6 @@ export function imageFields(pcKey = "image", mobileKey = "imageMobile"): Field[]
 
 export const imageDefaults = { image: DEFAULT_IMAGE_SRC, imageMobile: DEFAULT_MOBILE_IMAGE_SRC };
 
-export function TitleBlock({ values }: { values: Values }) {
-  const pair = items(values.title)[0] ?? {};
-  const small = str(pair.small);
-  return (
-    <div className="demo-header">
-      {small !== "" && <p className="demo-eyebrow">{small}</p>}
-      {str(pair.big) !== "" && <p className="demo-title">{str(pair.big)}</p>}
-    </div>
-  );
-}
-
-// PC 이미지와 모바일 이미지를 한 쌍으로 그린다. 주소가 비어 있으면 그 이미지는 넣지 않는다.
-export function Pictures({ image, imageMobile }: { image: unknown; imageMobile: unknown }) {
-  return (
-    <div className="demo-visual">
-      {str(image).trim() !== "" && <img className="demo-pc-only" src={pcImage(image)} alt="" />}
-      {str(imageMobile).trim() !== "" && <img className="demo-mobile-only" src={mobileImage(imageMobile)} alt="" />}
-    </div>
-  );
-}
-
 // 타입 13과 14가 같이 쓰는 표 모양 목록(원본 마크업): 번호 칸, 글 칸, 체크 칸.
 export function TableRows({ rows }: { rows: Values[] }) {
   return (

@@ -53,36 +53,7 @@ const ORIGINAL_CSS = `
   .bg-image-1 .cms-description, .bg-image-2 .cms-description { color: #e6ebf0; }
 `;
 
-// 아직 원본 마크업으로 바꾸지 않은 타입(demo- 클래스)을 위한 임시 CSS. 모든 타입을 바꾸면 지운다.
-const LEGACY_CSS = `
-  .demo-inner { display: flex; flex-direction: column; gap: 24px; }
-  .demo-header { padding-top: 12px; border-top: 2px solid #1d2733; }
-  .demo-eyebrow { margin: 0 0 4px; font-size: 0.875rem; font-weight: 600; color: #3a6ea5; }
-  .demo-title { margin: 0; font-size: 1.5rem; line-height: 1.3; }
-  .demo-desc { margin: 0; color: #4a5766; }
-  .demo-visual img { width: 100%; height: auto; }
-  .demo-list-item { margin: 0; }
-  .demo-check { position: relative; flex: none; width: 28px; height: 28px; border: 2px solid #3a6ea5; border-radius: 50%; }
-  .demo-check::after { content: ""; position: absolute; left: 8px; top: 3px; width: 6px; height: 12px; border-right: 2px solid #3a6ea5; border-bottom: 2px solid #3a6ea5; transform: rotate(45deg); }
-  ol, ul { margin: 0; padding: 0; list-style: none; }
-  .demo-block { margin: 0 0 16px; padding: 24px; border: 1px solid #d5dce4; }
-  .demo-pc-only { display: none; }
-  .demo-mobile-only { display: block; }
-  @media (min-width: 48rem) {
-    .demo-pc-only { display: block; }
-    .demo-mobile-only { display: none; }
-  }
-  .demo-cols-1, .demo-cols-2, .demo-cols-3, .demo-cols-4 { display: grid; gap: 12px; margin: 0; padding: 0; list-style: none; }
-  .demo-cols-1 { grid-template-columns: minmax(0, 1fr); }
-  .demo-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .demo-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .demo-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-  @media (max-width: 40rem) {
-    .demo-cols-2, .demo-cols-3, .demo-cols-4 { grid-template-columns: minmax(0, 1fr); }
-  }
-`;
-
-export const BASE_CSS = ORIGINAL_CSS + LEGACY_CSS;
+export const BASE_CSS = ORIGINAL_CSS;
 
 // 샌드박스 iframe은 출처가 없는 문서라서 환경에 따라 이 사이트의 이미지 경로를 불러오지 못한다.
 // 소스 창에는 기본 이미지 경로가 그대로 보이게 두고, 미리보기 문서에서만 같은 그림을 인라인으로 바꾼다.
