@@ -54,10 +54,10 @@ describe("buildPreviewDocument", () => {
     expect(doc).toContain('<meta charset="utf-8">');
   });
 
-  test("the base css switches pc and mobile images by width and defines the column helpers", () => {
-    expect(BASE_CSS).toContain(".demo-pc-only");
-    expect(BASE_CSS).toContain(".demo-mobile-only");
-    expect(BASE_CSS).toContain("min-width: 48rem");
-    for (const n of [1, 2, 3, 4]) expect(BASE_CSS).toContain(`.demo-cols-${n}`);
+  test("the base css implements the Bootstrap class names the original markup uses (lg = 992px)", () => {
+    for (const token of [".row", ".col-6", ".col-lg-6", ".col-lg-auto", ".d-none", ".d-block", ".d-lg-block", ".d-lg-none", ".img-fluid", ".w-100"]) {
+      expect(BASE_CSS, token).toContain(token);
+    }
+    expect(BASE_CSS).toContain("min-width: 992px");
   });
 });

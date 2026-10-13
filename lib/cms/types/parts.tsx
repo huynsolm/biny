@@ -85,3 +85,97 @@ export const tableCss = (cls: string) => `
     .${cls} .demo-fixed-cell { display: flex; justify-content: center; }
     .${cls} .demo-fixed-cell .demo-desc { font-weight: 600; color: #1d2733; }
   `;
+
+// ---- 원본 마크업 부품 (원본 CMS 도구의 출력과 같은 HTML을 만든다) ----
+
+// 원본 머리글: <div class="cms-header top-border"> 작은 글(있을 때) + 큰 글.
+// 타입 20, 21, 23은 큰 글이 비어 있으면 넣지 않고, 타입 21은 "left-type"이 붙는다.
+export function CmsHeader({
+  values,
+  hideEmptyBig = false,
+  extraClass = "",
+}: {
+  values: Values;
+  hideEmptyBig?: boolean;
+  extraClass?: string;
+}) {
+  const pair = items(values.title)[0] ?? {};
+  const small = str(pair.small);
+  const big = str(pair.big);
+  return (
+    <div className={`cms-header top-border${extraClass ? ` ${extraClass}` : ""}`}>
+      {small !== "" && <p className="cms-eyebrow">{small}</p>}
+      {(!hideEmptyBig || big !== "") && <p className="cms-title">{big}</p>}
+    </div>
+  );
+}
+
+// 조건부 이미지. 주소가 비어 있으면 넣지 않는다(원본의 `image && <img …/>`). gate가 false여도 넣지 않는다.
+// 원본 중 일부(타입 18, 20~23, 25)는 모바일 이미지를 PC 이미지가 있을 때만 보여 주는데, 그 조건이 gate다.
+export function Img({
+  value,
+  kind,
+  className,
+  gate = true,
+}: {
+  value: unknown;
+  kind: "pc" | "mobile";
+  className: string;
+  gate?: boolean;
+}) {
+  if (!gate || str(value).trim() === "") return null;
+  return <img src={kind === "pc" ? pcImage(value) : mobileImage(value)} alt="" className={className} />;
+}
+
+// 원본의 도형 SVG. 속성과 경로, 중복되는 id="path"까지 원본 그대로다.
+export function PentagonSvg() {
+  return (
+    <svg className="cms-figure-svg" width="286" height="274" viewBox="0 0 286 274">
+      <g transform="translate(-378 -1390)">
+        <path
+          id="path"
+          className="cls-1"
+          d="M513.454,1398.61L390.626,1488.2a13.745,13.745,0,0,0-4.968,15.34l46.916,144.96a13.679,13.679,0,0,0,13,9.49H597.4a13.679,13.679,0,0,0,13-9.49l46.916-144.96a13.746,13.746,0,0,0-4.967-15.34l-122.829-89.59A13.618,13.618,0,0,0,513.454,1398.61Z"
+        />
+      </g>
+    </svg>
+  );
+}
+
+export function HexagonSvg() {
+  return (
+    <svg className="cms-figure-svg" width="276" height="244" viewBox="0 0 276 244">
+      <g transform="translate(-297.031 -11866)">
+        <path
+          id="path"
+          className="cls-1"
+          d="M490.031,11870H379.977a24.026,24.026,0,0,0-20.745,11.8l-55.027,94.3a23.482,23.482,0,0,0,0,23.7l55.027,94.3a23.907,23.907,0,0,0,20.745,11.9H490.031a23.907,23.907,0,0,0,20.745-11.9l55.027-94.3a23.482,23.482,0,0,0,0-23.7l-55.027-94.3A24.026,24.026,0,0,0,490.031,11870Z"
+        />
+      </g>
+    </svg>
+  );
+}
+
+export function CheckCircleSvg() {
+  return (
+    <svg className="cms-figure-svg" width="40" height="40" viewBox="0 0 40 40">
+      <path
+        className="cls-1"
+        d="M323,9872.8a16.985,16.985,0,1,1-16.981,16.98A17,17,0,0,1,323,9872.8m0-3.01a20,20,0,1,0,20,19.99,19.993,19.993,0,0,0-20-19.99h0Zm8.444,12.94-10.216,10.21-4.028-4.02-2.013,2.01,4.027,4.03,2.014,2.01,2.014-2.01,10.216-10.22-2.014-2.01h0Z"
+        transform="translate(-303 -9869.78)"
+      />
+    </svg>
+  );
+}
+
+export function CheckSvg() {
+  return (
+    <svg className="cms-figure-svg" width="18" height="14" viewBox="0 0 18 14">
+      <path
+        className="cls-1"
+        d="M336.945,10423.6l-1.945,2,6.289,6.4L353,10420l-1.945-2-9.766,10Z"
+        transform="translate(-335 -10418)"
+      />
+    </svg>
+  );
+}

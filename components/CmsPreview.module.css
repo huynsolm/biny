@@ -119,15 +119,25 @@ textarea.control {
   font-size: 0.9375rem;
 }
 
+.previewScroll {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
 .preview {
-  width: 100%;
+  display: block;
   height: 32rem;
   border: 1px solid var(--color-line);
   background: #ffffff;
 }
 
+.previewPc {
+  width: 1100px;
+}
+
 .previewMobile {
-  max-width: 360px;
+  width: 360px;
+  max-width: 100%;
 }
 
 .widthToggle {

@@ -113,7 +113,7 @@ export default function CmsPreview() {
               checked={previewWidth === "pc"}
               onChange={() => setPreviewWidth("pc")}
             />
-            PC (전체 폭)
+            PC (1100px)
           </label>
           <label className={styles.radio}>
             <input
@@ -125,12 +125,15 @@ export default function CmsPreview() {
             모바일 (360px)
           </label>
         </fieldset>
-        <iframe
-          title="HTML 미리보기"
-          className={previewWidth === "mobile" ? `${styles.preview} ${styles.previewMobile}` : styles.preview}
-          sandbox=""
-          srcDoc={buildPreviewDocument(html, type.css)}
-        />
+        {/* PC는 원본 마크업의 PC 기준(Bootstrap lg, 992px)을 넘는 고정 폭이라, 영역이 좁으면 이 안에서만 가로로 스크롤된다. */}
+        <div className={styles.previewScroll}>
+          <iframe
+            title="HTML 미리보기"
+            className={`${styles.preview} ${previewWidth === "mobile" ? styles.previewMobile : styles.previewPc}`}
+            sandbox=""
+            srcDoc={buildPreviewDocument(html, type.css)}
+          />
+        </div>
       </section>
     </div>
   );
