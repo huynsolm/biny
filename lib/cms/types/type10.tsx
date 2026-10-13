@@ -1,9 +1,7 @@
 import { items, richProps, str, type CmsType } from "../type";
-import { Pictures, TitleBlock, imageDefaults, imageFields, listField, titleDefault, titleField } from "./parts";
+import { CmsHeader, HexagonSvg, Img, imageDefaults, imageFields, listField, titleDefault, titleField } from "./parts";
 
-// 원본 타입 10: 제목 + 큰 이미지 한 장 + 육각형 번호 목록. 원본은 contents[0]의 이미지만 위쪽에 쓰므로 이미지는 최상위로 편다.
-// 항목마다 육각형 안의 글(번호, 핵심 단어)과 오른쪽 설명(소제목, 설명, 있으면 테두리 목록)이 있다.
-// 원본의 육각형 SVG 경로는 가져오지 않고 CSS clip-path로 새로 그렸다.
+// 원본 타입 10과 같은 HTML을 만든다: 제목 + 큰 이미지 한 장 + 육각형 번호 목록. 원본은 contents[0]의 이미지만 쓰므로 최상위로 편다.
 const type10: CmsType = {
   id: "type10",
   number: "10",
@@ -29,52 +27,52 @@ const type10: CmsType = {
     ],
   },
   css: `
-    .demo-type10 .demo-figure-list { display: flex; flex-direction: column; gap: 24px; }
-    .demo-type10 .demo-list-item { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; align-items: center; }
-    .demo-type10 .demo-hexagon { display: flex; align-items: center; justify-content: center; width: 12rem; max-width: 100%; aspect-ratio: 1.13 / 1; text-align: center; background: #3a6ea5; color: #ffffff; clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%); }
-    .demo-type10 .demo-figure-text { display: flex; flex-direction: column; gap: 2px; padding: 0 16px; }
-    .demo-type10 .demo-hexagon .demo-eyebrow { margin: 0; color: #cfe0f3; }
-    .demo-type10 .demo-hexagon .demo-desc { color: #ffffff; font-weight: 600; }
-    .demo-type10 .demo-border-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
-    .demo-type10 .demo-border-list .demo-list-item { display: block; padding: 6px 12px; border: 1px solid #3a6ea5; }
-    .demo-type10 .demo-border-list .demo-title { font-size: 1rem; }
-    @media (min-width: 48rem) {
-      .demo-type10 .demo-list-item { grid-template-columns: 12rem minmax(0, 1fr); gap: 24px; }
-    }
+    .type10 .cms-figure-list { display: flex; flex-direction: column; gap: 24px; }
+    .type10 .cms-figure.hexagon { position: relative; width: 12rem; height: 10.6rem; margin-bottom: 12px; }
+    .type10 .cms-figure.hexagon svg { display: block; width: 100%; height: 100%; }
+    .type10 .cms-figure.hexagon .cls-1 { fill: #3a6ea5; }
+    .type10 .cms-figure-text { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; color: #ffffff; }
+    .type10 .cms-figure-text .cms-eyebrow { margin: 0; color: #cfe0f3; }
+    .type10 .cms-figure-text .cms-title { font-size: 1.125rem; color: #ffffff; }
+    .type10 .cms-border-list { margin-top: 12px; row-gap: 8px; }
+    .type10 .cms-border-list .cms-list-item { padding-top: 0; }
+    .type10 .cms-border-list .cms-title { padding: 4px 12px; border: 1px solid #3a6ea5; font-size: 1rem; }
   `,
   View: ({ values }) => (
-    <section className="demo-block demo-type10">
-      <div className="demo-inner">
-        <TitleBlock values={values} />
-        <Pictures image={values.image} imageMobile={values.imageMobile} />
-        <div className="demo-list-wrap">
-          <ol className="demo-figure-list">
+    <section className="cms type10">
+      <div className="cms-inner">
+        <CmsHeader values={values} />
+        <div className="cms-visual mobile-expanded">
+          <Img value={values.image} kind="pc" className="img-fluid d-none d-lg-block" />
+          <Img value={values.imageMobile} kind="mobile" className="w-100 d-block d-lg-none" />
+        </div>
+        <div className="cms-list-wrap">
+          <ol className="cms-figure-list text-type-1">
             {items(values.contents).map((item, index) => {
               const subtexts = items(item.subtext);
               return (
-                <li key={index} className="demo-list-item">
-                  <div className="demo-figure demo-hexagon">
-                    <div className="demo-figure-text">
-                      <p className="demo-eyebrow">{str(item.num)}</p>
-                      <p className="demo-desc">{str(item.title)}</p>
+                <li key={index} className="cms-list-item">
+                  <div className="row align-items-center">
+                    <div className="cms-figure hexagon col-lg-auto">
+                      <HexagonSvg />
+                      <div className="cms-figure-text">
+                        <p className="cms-eyebrow">{str(item.num)}</p>
+                        <p className="cms-title">{str(item.title)}</p>
+                      </div>
                     </div>
-                  </div>
-                  <div className="demo-description-box">
-                    <p className="demo-eyebrow">{str(item.sTitle)}</p>
-                    <p className="demo-desc" {...richProps(item.text)} />
-                    {subtexts.length > 0 && (
-                      <div className="demo-list-wrap">
-                        <ul className="demo-border-list">
+                    <div className="cms-description-box col-lg">
+                      <p className="cms-eyebrow">{str(item.sTitle)}</p>
+                      <p className="cms-description" {...richProps(item.text)} />
+                      {subtexts.length > 0 && (
+                        <ul className="cms-border-list text-type-2 row">
                           {subtexts.map((sub, subIndex) => (
-                            <li key={subIndex} className="demo-list-item">
-                              <div className="demo-description-box">
-                                <p className="demo-title">{str(sub.text)}</p>
-                              </div>
+                            <li key={subIndex} className="cms-list-item col-6 col-lg-auto">
+                              <p className="cms-title">{str(sub.text)}</p>
                             </li>
                           ))}
                         </ul>
-                      </div>
-                    )}
+                      )}
+                    </div>
                   </div>
                 </li>
               );
