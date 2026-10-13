@@ -8,24 +8,37 @@ stack:
   - SCSS
   - Gulp
   - Babel
+  - gulp-file-include
   - 반응형 UI
 order: 1
 image: /images/gulp-template.jpg
 imageAlt: Gulp 템플릿 데모 페이지의 첫 화면. "Eight skins. One workflow." 제목과 8개 스킨 목록의 시작 부분이 보여요.
 liveUrl: https://team-library.biny.cloud/gulp-template/
+repoUrl: https://github.com/huynsolm/gulp_template
 ---
 
 ## 문제
 
-병원 홈페이지는 비슷한 구조가 반복돼요. 사이트마다 공통 구조와 자산을 따로 관리하면 제작 과정의 일관성이 떨어질 수 있었어요.
+병원 홈페이지는 비슷한 구조가 반복돼요. 사이트마다 공통 마크업과 스타일을 따로 관리하면 제작 과정의 일관성이 떨어질 수 있었어요.
 
-## 한 일
+## 역할
 
-HTML 구조화, SCSS 컴포넌트 구성, 반응형 UI 구현을 맡았어요. HTML include와 자산 빌드 흐름을 구성하고, 바뀌지 않는 공통 구조와 스킨별 스타일을 분리했어요.
+반응형 스킨의 HTML 구조화, SCSS 구조 설계, 반응형 UI 구현을 맡았어요.
 
-## 결과
+## 구현
 
-한 제작 환경에서 8개 스킨을 확인할 수 있는 재사용 가능한 퍼블리싱 기반이 만들어졌어요. 수정 범위를 예측하기 쉬워졌어요.
+- 반응형 스킨의 공통 마크업과 SCSS 구조를 정리하고, 공통 구조와 스킨별 스타일을 분리했어요.
+- `gulp-nunjucks-render`를 검토한 뒤 `gulp-file-include` 기반 템플릿으로 전환하고 고도화했어요.
+- 변수, 반복문, include로 HTML을 컴포넌트화하고 GNB, 사이트맵, 버튼, 슬라이더 같은 반복 UI를 재사용할 수 있게 했어요.
+- SCSS를 표준화하고 폴더와 파일 이름을 정리했어요. Swiper는 `data-*` 속성으로 관리했어요.
+- SKIN01부터 SKIN08까지를 한 제작 환경에서 다루도록 고도화했어요.
+- 작업 내용은 Confluence와 GitLab에 문서로 남겼어요.
+
+## 확인할 수 있는 것
+
+공개 데모에서 8개 스킨을 직접 볼 수 있고, 소스 기록은 GitHub 저장소에서 볼 수 있어요.
+
+시간 단축률이나 오류 감소율, 접근성·성능 점수는 검증된 기준이 없어서 적지 않아요. 내부 문서 화면과 비공개 운영 정보도 공개하지 않아요.
 
 ## 이 경험이 프론트엔드로 이어지는 지점
 
