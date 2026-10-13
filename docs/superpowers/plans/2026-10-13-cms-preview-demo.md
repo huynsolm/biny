@@ -191,7 +191,7 @@ git commit -m "feat: add CMS component preview demo page"
 **Interfaces:**
 - Consumes: 라우트 `/cms-preview` (Task 3)
 
-- [ ] **Step 1: MDX의 "확인할 수 있는 것"에 한 단락을 추가한다.** 이 문구의 뜻을 그대로 쓴다: 원본은 업무에서 만든 도구라 소스와 화면은 공개하지 않았고, 같은 흐름을 샘플 데이터로 새로 만든 개인 데모가 있으며 컴포넌트 타입은 3개뿐이다. `[데모 열어 보기](/cms-preview)` 상대 링크를 둔다. 기존 문구(스택, 역할, 공개 범위 문장)는 바꾸지 않는다. 성과 수치와 "같은 코드"라는 표현은 쓰지 않는다.
+- [ ] **Step 1: MDX의 "확인할 수 있는 것"에 한 단락을 추가한다.** 이 문구의 뜻을 그대로 쓴다: 원본 화면과 소스는 공개용으로 정리하지 않아 링크하지 않았고, 같은 흐름을 샘플 데이터로 새로 만든 개인 데모가 있으며 컴포넌트 타입은 3개뿐이다. `[데모 열어 보기](/cms-preview)` 상대 링크를 둔다. 기존 문구(스택, 역할, 공개 범위 문장)는 바꾸지 않는다. 성과 수치와 "같은 코드"라는 표현은 쓰지 않는다.
 
 - [ ] **Step 2: 전체 검증** — `npm test`(전체 PASS), `npm run lint`, `npm run build`(`/cms-preview`와 `/projects/react-cms-preview` 생성), `git diff --check`.
 
