@@ -9,6 +9,19 @@ describe("buildPreviewDocument", () => {
     expect(body.trim()).toBe(html);
   });
 
+  test("inlines the default sample image so the sandboxed preview does not depend on same-site loading", () => {
+    const doc = buildPreviewDocument('<img class="demo-image" src="/images/cms-sample.svg" alt="x">');
+    expect(doc).not.toContain('src="/images/cms-sample.svg"');
+    expect(doc).toContain('src="data:image/svg+xml,');
+    expect(doc).toContain('alt="x"');
+  });
+
+  test("leaves other image sources untouched", () => {
+    const doc = buildPreviewDocument('<img src="https://example.com/a.png" alt="">');
+    expect(doc).toContain('src="https://example.com/a.png"');
+    expect(doc).not.toContain("data:image/svg+xml");
+  });
+
   test("contains no script element", () => {
     expect(buildPreviewDocument("<p>x</p>").toLowerCase()).not.toContain("<script");
   });

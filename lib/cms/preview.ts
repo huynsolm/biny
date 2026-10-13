@@ -1,3 +1,5 @@
+import { DEFAULT_IMAGE_SRC } from "./html";
+
 // 미리보기 iframe 안에서만 쓰는 데모용 스타일이다. 사이트의 디자인 토큰과 별개로, 밝은 바탕에서 읽기 쉽게만 만든다.
 const PREVIEW_CSS = `
   * { box-sizing: border-box; }
@@ -14,8 +16,16 @@ const PREVIEW_CSS = `
   .demo-card-desc { margin: 0; color: #4a5766; font-size: 0.9375rem; }
 `;
 
+// 샌드박스 iframe은 출처가 없는 문서라서 환경에 따라 이 사이트의 이미지 경로를 불러오지 못한다.
+// 소스 창에는 기본 이미지 경로가 그대로 보이게 두고, 미리보기 문서에서만 같은 그림을 인라인으로 바꾼다.
+// 이 SVG는 public/images/cms-sample.svg와 같은 도형이다.
+const SAMPLE_SVG =
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360"><rect width="640" height="360" fill="#e8eef5"/><circle cx="200" cy="130" r="48" fill="#9db8d6"/><polygon points="80,300 260,170 380,300" fill="#6f93b8"/><polygon points="300,300 440,200 580,300" fill="#4d7399"/></svg>';
+const SAMPLE_DATA_URI = `data:image/svg+xml,${encodeURIComponent(SAMPLE_SVG)}`;
+
 // iframe의 srcDoc에 넣을 문서 문자열을 만든다. 스크립트는 넣지 않는다.
-export function buildPreviewDocument(html: string): string {
+export function buildPreviewDocument(rawHtml: string): string {
+  const html = rawHtml.split(`src="${DEFAULT_IMAGE_SRC}"`).join(`src="${SAMPLE_DATA_URI}"`);
   return [
     "<!doctype html>",
     '<html lang="ko">',
