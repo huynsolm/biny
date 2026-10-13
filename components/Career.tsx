@@ -1,13 +1,14 @@
 import SectionHeading from "./SectionHeading";
 import styles from "./Career.module.css";
 
-// 작성자가 직접 알려준 사실만 적는다. 정확한 월을 모르는 시점(맥스마인 퇴사, idstrust 입사)은 적지 않는다.
+// 2020.12부터는 작성자의 인사 발령 기록을 기준으로 한다. 그 이전(맥스마인 퇴사 시점 등)은 작성자가 알려준 사실만 적고, 정확한 월을 모르는 시점은 적지 않는다.
+// 팀 이름, 직책, 직무급 같은 내부 정보는 적지 않는다.
 const ITEMS: { period: string; title: string; detail?: string }[] = [
   { period: "2010", title: "맥스마인", detail: "웹 퍼블리싱 · 4년 11개월" },
   { period: "그 사이", title: "방과후 로봇강사, 학원강사" },
-  { period: "2020.12", title: "엠서클", detail: "웹 퍼블리싱 · 다시 입사 · 1년 2개월" },
-  { period: "~ 2024.5", title: "idstrust", detail: "웹 퍼블리싱 · 회사 인사 이동" },
-  { period: "2024.5 ~ 현재", title: "page1", detail: "웹 퍼블리싱 · 회사 인사 이동" },
+  { period: "2020.12 ~ 2022.02", title: "엠서클 (현 하나누리)", detail: "웹 퍼블리싱 · 다시 입사 · 1년 2개월" },
+  { period: "2022.03 ~ 2024.10", title: "아이디에스앤트러스트", detail: "웹 퍼블리싱 · 관계사 이동 · 2년 8개월" },
+  { period: "2024.11 ~ 현재", title: "페이지원", detail: "웹 퍼블리싱 · 관계사 이동" },
 ];
 
 export default function Career() {
