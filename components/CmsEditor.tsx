@@ -65,6 +65,8 @@ export default function CmsEditor({ fields, values, onChange }: Props) {
     const depth = listPath.length - 1;
     const items = readItems(scope, field.key);
     const addId = `${id}-add`;
+    // 새 항목에서 포커스를 받을 첫 입력(글, 본문, 이미지, 선택). 목록이나 표만 있으면 없다.
+    const firstInputKey = field.fields.find((f) => f.kind !== "list" && f.kind !== "table")?.key;
 
     // 개수가 정해진 목록(제목처럼 최소 = 최대)은 추가/삭제 버튼과 안내 없이 필드만 보여 준다.
     if (field.min === field.max) {
@@ -119,13 +121,20 @@ export default function CmsEditor({ fields, values, onChange }: Props) {
           type="button"
           id={addId}
           className={styles.button}
+          aria-describedby={`${id}-hint`}
           disabled={items.length >= maxItems(field, depth)}
-          onClick={() => onChange(addListItem(values, listPath, field))}
+          onClick={() => {
+            onChange(addListItem(values, listPath, field));
+            // 마지막 칸을 채우면 "추가" 버튼이 비활성화되어 포커스가 사라지므로, 새 항목의 첫 입력으로 옮긴다.
+            if (firstInputKey && items.length + 1 >= maxItems(field, depth)) {
+              focusRequest.current = `cms-${[...listPath, items.length, firstInputKey].join("-")}`;
+            }
+          }}
         >
           {labelPrefix}
           {field.itemLabel} 추가
         </button>
-        <p className={styles.hint}>
+        <p id={`${id}-hint`} className={styles.hint}>
           {field.itemLabel}은(는) {field.min}개에서 {maxItems(field, depth)}개까지 만들 수 있어요.
         </p>
       </fieldset>
@@ -163,6 +172,7 @@ export default function CmsEditor({ fields, values, onChange }: Props) {
             {(table.headers[0] ?? []).map((cell, c) => (
               <input
                 key={c}
+                id={`${id}-h-${c}`}
                 className={styles.control}
                 type="text"
                 aria-label={`머리글 열 ${c + 1}`}
@@ -177,6 +187,7 @@ export default function CmsEditor({ fields, values, onChange }: Props) {
                 {row.map((cell, c) => (
                   <input
                     key={c}
+                    id={`${id}-r${r}-c${c}`}
                     className={styles.control}
                     type="text"
                     aria-label={`행 ${r + 1} 열 ${c + 1}`}
@@ -206,8 +217,13 @@ export default function CmsEditor({ fields, values, onChange }: Props) {
             type="button"
             id={addRowId}
             className={styles.button}
+            aria-describedby={`${id}-hint`}
             disabled={table.rows.length >= LIMITS.tableRows}
-            onClick={() => onChange(addTableRow(values, tablePath))}
+            onClick={() => {
+              onChange(addTableRow(values, tablePath));
+              // 마지막 행을 채우면 이 버튼이 비활성화되어 포커스가 사라지므로, 새 행의 첫 칸으로 옮긴다.
+              if (table.rows.length + 1 >= LIMITS.tableRows) focusRequest.current = `${id}-r${table.rows.length}-c0`;
+            }}
           >
             행 추가
           </button>
@@ -226,8 +242,12 @@ export default function CmsEditor({ fields, values, onChange }: Props) {
             type="button"
             id={addColId}
             className={styles.button}
+            aria-describedby={`${id}-hint`}
             disabled={cols >= LIMITS.tableCols}
-            onClick={() => onChange(addTableCol(values, tablePath))}
+            onClick={() => {
+              onChange(addTableCol(values, tablePath));
+              if (cols + 1 >= LIMITS.tableCols) focusRequest.current = `${id}-h-${cols}`;
+            }}
           >
             열 추가
           </button>
@@ -243,7 +263,7 @@ export default function CmsEditor({ fields, values, onChange }: Props) {
             마지막 열 삭제
           </button>
         </div>
-        <p className={styles.hint}>
+        <p id={`${id}-hint`} className={styles.hint}>
           {TABLE_HINT} 표는 최대 {LIMITS.tableRows}행, {LIMITS.tableCols}열까지예요.
         </p>
       </fieldset>
@@ -280,11 +300,14 @@ export default function CmsEditor({ fields, values, onChange }: Props) {
                 id={id}
                 className={styles.control}
                 rows={3}
+                aria-describedby={`${id}-hint`}
                 maxLength={LIMITS.rich}
                 value={readString(scope, field.key)}
                 onChange={(e) => set(e.target.value)}
               />
-              <p className={styles.hint}>&lt;em&gt;, &lt;strong&gt;, &lt;b&gt;, &lt;i&gt;, &lt;br&gt;만 쓸 수 있어요.</p>
+              <p id={`${id}-hint`} className={styles.hint}>
+                &lt;em&gt;, &lt;strong&gt;, &lt;b&gt;, &lt;i&gt;, &lt;br&gt;만 쓸 수 있어요.
+              </p>
             </div>
           );
         case "image":
@@ -295,11 +318,14 @@ export default function CmsEditor({ fields, values, onChange }: Props) {
                 id={id}
                 className={styles.control}
                 type="text"
+                aria-describedby={`${id}-hint`}
                 maxLength={LIMITS.image}
                 value={readString(scope, field.key)}
                 onChange={(e) => set(e.target.value)}
               />
-              <p className={styles.hint}>{IMAGE_HINT}</p>
+              <p id={`${id}-hint`} className={styles.hint}>
+                {IMAGE_HINT}
+              </p>
             </div>
           );
         case "select":

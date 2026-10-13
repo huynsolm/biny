@@ -1,4 +1,4 @@
-import type { TableCell, TableValue } from "../schema";
+import { renderWidth, type TableCell, type TableValue } from "../schema";
 import { richProps, str, type CmsType } from "../type";
 import { TitleBlock, titleDefault, titleField } from "./parts";
 
@@ -63,7 +63,7 @@ const type26: CmsType = {
                 <table className="demo-table">
                   <colgroup>
                     {table.colWidths.map((width, index) => (
-                      <col key={index} style={{ width }} />
+                      <col key={index} style={{ width: renderWidth(width) }} />
                     ))}
                   </colgroup>
                   <thead>

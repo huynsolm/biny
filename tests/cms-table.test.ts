@@ -6,6 +6,7 @@ import {
   normalizeValues,
   removeTableCol,
   removeTableRow,
+  renderWidth,
   type Field,
   type TableCell,
   type TableValue,
@@ -131,9 +132,33 @@ describe("table normalization", () => {
     expect(out.rows[0].every((c) => !c.hidden)).toBe(true);
   });
 
-  test("only safe column widths survive", () => {
-    const t: TableValue = { headers: grid(1, 6), rows: grid(1, 6), colWidths: ["30%", "<script>", "auto", "120px", "5", "url(x)"] };
-    expect(normalized(t).colWidths).toEqual(["30%", "auto", "auto", "120px", "5px", "auto"]);
+  test("column widths keep what is being typed, one character at a time", () => {
+    // 입력창은 정리된 값을 다시 받아 보여 주므로, 아직 완성되지 않은 값("aut", "4p")이 바뀌면 글자를 지울 수도 쓸 수도 없다.
+    for (const typed of ["", "a", "au", "aut", "auto", "4", "4p", "40", "40%", "12.5rem"]) {
+      const out = normalized({ headers: grid(1, 1), rows: grid(1, 1), colWidths: [typed] });
+      expect(out.colWidths, JSON.stringify(typed)).toEqual([typed]);
+    }
+  });
+
+  test("column widths drop other characters and are capped at 8", () => {
+    const t: TableValue = { headers: grid(1, 4), rows: grid(1, 4), colWidths: ["<script>", "a b(c)", "1234567890", "url(x)"] };
+    expect(normalized(t).colWidths).toEqual(["script", "abc", "12345678", "urlx"]);
+  });
+
+  test("a missing or non-string column width becomes auto", () => {
+    const t = { headers: grid(1, 3), rows: grid(1, 3), colWidths: [5, null] } as unknown as TableValue;
+    expect(normalized(t).colWidths).toEqual(["auto", "auto", "auto"]);
+  });
+
+  test("renderWidth accepts only valid CSS widths and falls back to auto", () => {
+    expect(renderWidth("30%")).toBe("30%");
+    expect(renderWidth("auto")).toBe("auto");
+    expect(renderWidth("120px")).toBe("120px");
+    expect(renderWidth("12.5rem")).toBe("12.5rem");
+    expect(renderWidth("5")).toBe("5px");
+    for (const bad of ["", "au", "aut", "script", "4px0%", "99999", "expressi", "4p", "px"]) {
+      expect(renderWidth(bad), JSON.stringify(bad)).toBe("auto");
+    }
   });
 
   test("does not mutate its input", () => {

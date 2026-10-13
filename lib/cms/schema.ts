@@ -63,13 +63,20 @@ function readCell(raw: unknown): TableCell {
   return { value: str(cell.value, LIMITS.tableCell), colspan: toSpan(cell.colspan), rowspan: toSpan(cell.rowspan), hidden: false };
 }
 
-// style="width:…"에 들어가는 값이라 허용 형식만 남긴다: auto, 숫자(px로 보정), 숫자+px/%/rem.
-const SAFE_WIDTH = /^(?:auto|\d{1,4}(?:\.\d{1,2})?(?:px|%|rem)?)$/;
+// 열 너비는 두 단계로 다룬다.
+// 1) cleanWidth: 편집기가 값을 다시 받아 보여 주므로, 입력 중인 값("aut", "4p")을 바꾸면 글자를 지우거나 쓸 수 없다.
+//    그래서 글자, 숫자, 점, 퍼센트만 남기고 8자로 자를 뿐 모양은 검사하지 않는다. 안전한 글자만 저장된다.
+// 2) renderWidth: style="width:…"에 실제로 들어갈 때만 엄격하게 검사한다.
+function cleanWidth(value: unknown): string {
+  return typeof value === "string" ? value.replace(/[^A-Za-z0-9.%]/g, "").slice(0, 8) : "auto";
+}
 
-function safeWidth(value: unknown): string {
-  if (typeof value !== "string") return "auto";
+const VALID_WIDTH = /^(?:auto|\d{1,4}(?:\.\d{1,2})?(?:px|%|rem)?)$/;
+
+// 허용 형식: auto, 숫자(px로 보정), 숫자+px/%/rem. 그 밖의 값은 auto.
+export function renderWidth(value: string): string {
   const width = value.trim();
-  if (!SAFE_WIDTH.test(width)) return "auto";
+  if (!VALID_WIDTH.test(width)) return "auto";
   return /^\d+(?:\.\d+)?$/.test(width) ? `${width}px` : width;
 }
 
@@ -131,7 +138,7 @@ function normalizeTable(raw: unknown): TableValue {
   return {
     headers: resolveSpans(padGrid(headerRows, cols, 1), cols),
     rows: resolveSpans(padGrid(bodyRows, cols, 1), cols),
-    colWidths: Array.from({ length: cols }, (_, i) => safeWidth(given[i])),
+    colWidths: Array.from({ length: cols }, (_, i) => cleanWidth(given[i])),
   };
 }
 
