@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   COMPONENT_TYPES,
   DEFAULT_VALUES,
@@ -24,12 +24,22 @@ export default function CmsPreview() {
   const [values, setValues] = useState<CmsValues>(DEFAULT_VALUES);
   const [copyMessage, setCopyMessage] = useState("");
   const sourceRef = useRef<HTMLTextAreaElement>(null);
+  const focusRequest = useRef<string | null>(null);
 
   const fields = COMPONENT_TYPES.find((t) => t.id === type)?.fields ?? [];
   const cards = clampCards(values.cards);
   const html = renderHtml(type, values);
 
+  // 카드를 지우면 포커스를 갖고 있던 버튼이 사라지므로, 요청된 요소로 포커스를 옮긴다.
+  useEffect(() => {
+    if (focusRequest.current === null) return;
+    document.getElementById(focusRequest.current)?.focus();
+    focusRequest.current = null;
+  });
+
   function update<K extends keyof CmsValues>(key: K, value: CmsValues[K]) {
+    // 입력이 바뀌면 이전에 복사한 소스와 달라지므로 복사 결과 안내를 지운다.
+    setCopyMessage("");
     setValues((prev) => ({ ...prev, [key]: value }));
   }
 
@@ -65,7 +75,10 @@ export default function CmsPreview() {
               id="cms-type"
               className={styles.control}
               value={type}
-              onChange={(e) => setType(e.target.value as ComponentTypeId)}
+              onChange={(e) => {
+                setType(e.target.value as ComponentTypeId);
+                setCopyMessage("");
+              }}
             >
               {COMPONENT_TYPES.map((t) => (
                 <option key={t.id} value={t.id}>
@@ -87,7 +100,7 @@ export default function CmsPreview() {
                 onChange={(e) => update("imageSrc", e.target.value)}
               />
               <p className={styles.hint}>
-                /로 시작하는 경로나 https:// 주소만 쓸 수 있어요. 그 밖의 값은 샘플 이미지로 바뀌어요.
+                샘플 이미지(/images/cms-sample.svg)나 https:// 주소를 쓸 수 있어요. 그 밖의 값은 샘플 이미지로 바뀌어요. 이 사이트의 다른 경로는 소스에는 나오지만 미리보기에서는 불러오지 못할 수 있어요.
               </p>
             </div>
           )}
@@ -167,7 +180,10 @@ export default function CmsPreview() {
                     type="button"
                     className={styles.button}
                     disabled={cards.length <= MIN_CARDS}
-                    onClick={() => update("cards", cards.filter((_, i) => i !== index))}
+                    onClick={() => {
+                      update("cards", cards.filter((_, i) => i !== index));
+                      focusRequest.current = "cms-add-card";
+                    }}
                   >
                     카드 {index + 1} 삭제
                   </button>
@@ -175,6 +191,7 @@ export default function CmsPreview() {
               ))}
               <button
                 type="button"
+                id="cms-add-card"
                 className={styles.button}
                 disabled={cards.length >= MAX_CARDS}
                 onClick={() => update("cards", [...cards, { title: "", description: "" }])}
