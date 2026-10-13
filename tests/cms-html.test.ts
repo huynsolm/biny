@@ -1,5 +1,10 @@
 import { describe, expect, test } from "vitest";
-import { DEFAULT_IMAGE_SRC, escapeHtml, safeImageSrc } from "@/lib/cms/html";
+import {
+  DEFAULT_IMAGE_SRC,
+  DEFAULT_MOBILE_IMAGE_SRC,
+  escapeHtml,
+  safeImageSrc,
+} from "@/lib/cms/html";
 
 describe("escapeHtml", () => {
   test("converts & < > \" '", () => {
@@ -40,5 +45,16 @@ describe("safeImageSrc", () => {
       "/a\u0000.png",
     ];
     for (const value of bad) expect(safeImageSrc(value), JSON.stringify(value)).toBe(DEFAULT_IMAGE_SRC);
+  });
+});
+
+describe("default images", () => {
+  test("DEFAULT_MOBILE_IMAGE_SRC is the mobile sample path", () => {
+    expect(DEFAULT_MOBILE_IMAGE_SRC).toBe("/images/cms-sample-m.svg");
+  });
+
+  test("safeImageSrc uses the given fallback", () => {
+    expect(safeImageSrc("javascript:x", DEFAULT_MOBILE_IMAGE_SRC)).toBe(DEFAULT_MOBILE_IMAGE_SRC);
+    expect(safeImageSrc("/images/a.svg", DEFAULT_MOBILE_IMAGE_SRC)).toBe("/images/a.svg");
   });
 });
