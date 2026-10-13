@@ -13,9 +13,18 @@ import { type12 } from "./types/type12";
 import { type13 } from "./types/type13";
 import { type14 } from "./types/type14";
 import { type15 } from "./types/type15";
+import { type16 } from "./types/type16";
+import { type17 } from "./types/type17";
+import { type18 } from "./types/type18";
+import { type19 } from "./types/type19";
+import { type20 } from "./types/type20";
+import { type21 } from "./types/type21";
 
 // 번호순. 원본에 08이 없어서 건너뛴다.
-export const CMS_TYPES: CmsType[] = [type01, type02, type03, type04, type05, type06, type07, type09, type10, type11, type12, type13, type14, type15];
+export const CMS_TYPES: CmsType[] = [
+  type01, type02, type03, type04, type05, type06, type07, type09, type10, type11, type12, type13, type14, type15,
+  type16, type17, type18, type19, type20, type21,
+];
 
 export function getType(id: string): CmsType | undefined {
   return CMS_TYPES.find((type) => type.id === id);

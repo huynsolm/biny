@@ -289,3 +289,145 @@ describe("type 15", () => {
     expect(without).toContain("본문 문단");
   });
 });
+
+describe("type 16", () => {
+  test("renders a pc image, a mobile hexagon and a two column list with icons", () => {
+    const html = render("type16");
+    expect(html).toContain('class="demo-block demo-type16"');
+    expect(count(html, "demo-pc-only")).toBe(1);
+    expect(count(html, "demo-hexagon")).toBe(1);
+    expect(count(html, "demo-mobile-only")).toBe(1);
+    expect(count(html, "demo-column-list")).toBe(1);
+    expect(count(html, "demo-icon")).toBe(listLength("type16", "contents"));
+  });
+
+  test("the hexagon text is plain and an empty pc image is omitted", () => {
+    const html = render("type16", { imageTit: "<em>x</em>", imagePc: "" });
+    expect(html).toContain("&lt;em&gt;x&lt;/em&gt;");
+    expect(count(html, "demo-pc-only")).toBe(0);
+    expect(count(html, "demo-hexagon")).toBe(1);
+  });
+
+  test("an empty icon is omitted and the text is rich", () => {
+    const html = render("type16", { contents: [{ tit: "t", text: "<em>ok</em><script>x</script>", icon: "" }] });
+    expect(count(html, "demo-icon")).toBe(0);
+    expect(html).toContain("<em>ok</em>");
+    expect(html.toLowerCase()).not.toContain("<script");
+  });
+});
+
+describe("type 17", () => {
+  test("renders a row list item per content", () => {
+    const html = render("type17");
+    expect(html).toContain('class="demo-block demo-type17"');
+    expect(count(html, "demo-row-list")).toBe(1);
+    expect(count(html, "demo-list-item")).toBe(listLength("type17", "contents"));
+  });
+
+  test("the title width select maps to a modifier and unknown values fall back to auto", () => {
+    expect(count(render("type17", { titleWidth: "auto" }), "demo-title-auto")).toBe(1);
+    expect(count(render("type17", { titleWidth: "wide" }), "demo-title-wide")).toBe(1);
+    const html = render("type17", { titleWidth: "<x>" });
+    expect(count(html, "demo-title-auto")).toBe(1);
+    expect(count(html, "demo-title-wide")).toBe(0);
+  });
+
+  test("the title is plain and the text is rich", () => {
+    const html = render("type17", { contents: [{ tit: "<em>t</em>", text: "<em>ok</em>" }] });
+    expect(html).toContain("&lt;em&gt;t&lt;/em&gt;");
+    expect(html).toContain("<em>ok</em>");
+  });
+});
+
+describe("type 18", () => {
+  test("renders an image list item per content", () => {
+    const html = render("type18");
+    expect(html).toContain('class="demo-block demo-type18"');
+    expect(count(html, "demo-img-list")).toBe(1);
+    expect(count(html, "demo-list-item")).toBe(listLength("type18", "contents"));
+    expect(count(html, "demo-visual-text")).toBe(listLength("type18", "contents"));
+  });
+
+  test("the text style select maps to a modifier and unknown values fall back to plain", () => {
+    expect(count(render("type18", { textStyle: "plain" }), "demo-text-plain")).toBe(1);
+    expect(count(render("type18", { textStyle: "framed" }), "demo-text-framed")).toBe(1);
+    const html = render("type18", { textStyle: "x" });
+    expect(count(html, "demo-text-plain")).toBe(1);
+    expect(count(html, "demo-text-framed")).toBe(0);
+  });
+
+  test("omits empty number, title and text", () => {
+    const html = render("type18", { contents: [{ image: "", imageMobile: "", num: "", tit: "", text: "" }] });
+    expect(count(html, "demo-eyebrow")).toBe(1); // 머리글의 작은 글만 남는다
+    expect(count(html, "demo-pc-only")).toBe(0);
+  });
+
+  test("all three text fields are rich", () => {
+    const html = render("type18", { contents: [{ image: "", imageMobile: "", num: "<em>1</em>", tit: "<em>t</em>", text: "<em>x</em><script>y</script>" }] });
+    expect(html).toContain("<em>1</em>");
+    expect(html).toContain("<em>t</em>");
+    expect(html.toLowerCase()).not.toContain("<script");
+  });
+});
+
+describe("type 19", () => {
+  test("renders a hexagon per item", () => {
+    const html = render("type19");
+    expect(html).toContain('class="demo-block demo-type19"');
+    expect(count(html, "demo-hexagon")).toBe(listLength("type19", "contents"));
+    expect(count(html, "demo-figure-text")).toBe(listLength("type19", "contents"));
+  });
+
+  test("the number is plain and the text is rich", () => {
+    const html = render("type19", { contents: [{ num: "<b>1</b>", text: "<em>ok</em><script>x</script>" }] });
+    expect(html).toContain("&lt;b&gt;1&lt;/b&gt;");
+    expect(html).toContain("<em>ok</em>");
+    expect(html.toLowerCase()).not.toContain("<script");
+  });
+});
+
+describe("type 20", () => {
+  test("renders an image beside a box with a heading and a border list", () => {
+    const html = render("type20");
+    expect(html).toContain('class="demo-block demo-type20"');
+    expect(count(html, "demo-visual")).toBe(1);
+    expect(count(html, "demo-em-box")).toBe(1);
+    expect(count(html, "demo-border-list")).toBe(1);
+    expect(count(html, "demo-list-item")).toBe(listLength("type20", "contents"));
+  });
+
+  test("the box heading uses the small and big text fields", () => {
+    const html = render("type20", { smTit: "작은 글 확인", tit: "큰 글 확인" });
+    expect(html).toContain("작은 글 확인");
+    expect(html).toContain("큰 글 확인");
+  });
+
+  test("border list texts are rich and empty ones are omitted", () => {
+    const html = render("type20", { contents: [{ text: "<em>ok</em><script>x</script>" }, { text: "" }] });
+    expect(html).toContain("<em>ok</em>");
+    expect(html.toLowerCase()).not.toContain("<script");
+    expect(count(html, "demo-border-list") === 1).toBe(true);
+  });
+
+  test("an empty big title does not leave an empty paragraph", () => {
+    const html = render("type20", { title: [{ small: "작은", big: "" }] });
+    expect(html).not.toContain('<p class="demo-title"></p>');
+  });
+});
+
+describe("type 21", () => {
+  test("renders a left aligned header, an image and a border list", () => {
+    const html = render("type21");
+    expect(html).toContain('class="demo-block demo-type21"');
+    expect(count(html, "demo-left")).toBe(1);
+    expect(count(html, "demo-visual")).toBe(1);
+    expect(count(html, "demo-border-list")).toBe(1);
+    expect(count(html, "demo-list-item")).toBe(listLength("type21", "contents"));
+  });
+
+  test("escapes script in a list text", () => {
+    const html = render("type21", { contents: [{ text: "<script>alert(1)</script>" }] });
+    expect(html.toLowerCase()).not.toContain("<script");
+    expect(html).toContain("&lt;script&gt;");
+  });
+});

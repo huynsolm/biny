@@ -40,7 +40,7 @@ export function TitleBlock({ values }: { values: Values }) {
   return (
     <div className="demo-header">
       {small !== "" && <p className="demo-eyebrow">{small}</p>}
-      <p className="demo-title">{str(pair.big)}</p>
+      {str(pair.big) !== "" && <p className="demo-title">{str(pair.big)}</p>}
     </div>
   );
 }
