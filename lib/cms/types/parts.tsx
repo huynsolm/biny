@@ -133,7 +133,7 @@ export function Img({
   gate?: boolean;
 }) {
   if (!gate || str(value).trim() === "") return null;
-  return <img src={kind === "pc" ? pcImage(value) : mobileImage(value)} alt="" className={className} />;
+  return <img src={kind === "pc" ? pcImage(value) : mobileImage(value)} alt="" className={className || undefined} />;
 }
 
 // 원본의 도형 SVG. 속성과 경로, 중복되는 id="path"까지 원본 그대로다.

@@ -5,7 +5,7 @@ import { normalizeValues } from "@/lib/cms/schema";
 
 // 레지스트리 전체를 돌며 검사하는 일반 테스트다. 타입이 늘어도 자동으로 적용된다.
 // 원본 마크업으로 바꾼 타입의 id. 작업마다 늘리고, 마지막 작업에서 모든 타입이 들어 있는지 확인한다.
-export const CONVERTED = new Set<string>(["type01", "type02", "type03", "type04", "type05", "type06", "type07", "type09", "type10", "type11", "type12", "type13", "type14", "type15"]);
+export const CONVERTED = new Set<string>(["type01", "type02", "type03", "type04", "type05", "type06", "type07", "type09", "type10", "type11", "type12", "type13", "type14", "type15", "type16", "type17", "type18", "type19", "type20", "type21"]);
 
 describe("registry", () => {
   test("ids and numbers are unique and ordered", () => {
