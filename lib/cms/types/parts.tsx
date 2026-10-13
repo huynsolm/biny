@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element -- HTML 소스를 만들기 위한 데모 마크업이라 next/image를 쓰지 않는다 */
 import { DEFAULT_IMAGE_SRC, DEFAULT_MOBILE_IMAGE_SRC } from "../html";
 import type { Field, ListField, Values } from "../schema";
-import { items, mobileImage, pcImage, str } from "../type";
+import { items, mobileImage, pcImage, richProps, str } from "../type";
 
 // 모든 타입이 같은 모양의 제목(작은 글 + 큰 글 한 쌍)을 쓴다. 원본의 title: [{ small, big }]에 해당한다.
 export const titleField: ListField = {
@@ -54,3 +54,34 @@ export function Pictures({ image, imageMobile }: { image: unknown; imageMobile: 
     </div>
   );
 }
+
+// 타입 13과 14가 같이 쓰는 표 모양 목록: 번호 칸, 글 칸, 체크 칸.
+export function TableRows({ rows }: { rows: Values[] }) {
+  return (
+    <ul className="demo-table-list">
+      {rows.map((row, index) => (
+        <li key={index} className="demo-list-item">
+          <div className="demo-inner-box">
+            <div className="demo-fixed-cell demo-description-box">
+              <p className="demo-desc">{str(row.num)}</p>
+            </div>
+            <div className="demo-description-box">
+              <p className="demo-desc" {...richProps(row.text)} />
+            </div>
+            <div className="demo-fixed-cell">
+              <div className="demo-figure demo-check" aria-hidden="true"></div>
+            </div>
+          </div>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+// 표 목록의 레이아웃 CSS. cls는 "demo-type13"처럼 타입 클래스 이름이다.
+export const tableCss = (cls: string) => `
+    .${cls} .demo-table-list { border-top: 2px solid #1d2733; }
+    .${cls} .demo-inner-box { display: grid; grid-template-columns: 4rem minmax(0, 1fr) 3rem; gap: 12px; align-items: center; padding: 14px 4px; border-bottom: 1px solid #d5dce4; }
+    .${cls} .demo-fixed-cell { display: flex; justify-content: center; }
+    .${cls} .demo-fixed-cell .demo-desc { font-weight: 600; color: #1d2733; }
+  `;

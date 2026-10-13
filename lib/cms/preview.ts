@@ -13,6 +13,8 @@ export const BASE_CSS = `
   .demo-desc { margin: 0; color: #4a5766; }
   .demo-visual img { width: 100%; height: auto; }
   .demo-list-item { margin: 0; }
+  .demo-check { position: relative; flex: none; width: 28px; height: 28px; border: 2px solid #3a6ea5; border-radius: 50%; }
+  .demo-check::after { content: ""; position: absolute; left: 8px; top: 3px; width: 6px; height: 12px; border-right: 2px solid #3a6ea5; border-bottom: 2px solid #3a6ea5; transform: rotate(45deg); }
   ol, ul { margin: 0; padding: 0; list-style: none; }
   .demo-block { margin: 0 0 16px; padding: 24px; border: 1px solid #d5dce4; }
   .demo-pc-only { display: none; }
