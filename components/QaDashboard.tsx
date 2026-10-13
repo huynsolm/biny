@@ -132,6 +132,7 @@ export default function QaDashboard() {
     setState(sample);
     setSelectedId(sample.pages[0].id);
     setPendingReset(false);
+    setPendingDelete(null);
     // 저장이 막힌 환경이면 되돌린 뒤에도 "저장되지 않는다"는 안내는 남겨야 한다.
     setNotice(blockedNotified.current ? NOTICE_BLOCKED : "");
     focusRequest.current = "pages-heading";
