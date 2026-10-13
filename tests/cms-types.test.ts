@@ -431,3 +431,98 @@ describe("type 21", () => {
     expect(html).toContain("&lt;script&gt;");
   });
 });
+
+describe("type 22", () => {
+  test("renders an image list with an item per content", () => {
+    const html = render("type22");
+    expect(html).toContain('class="demo-block demo-type22"');
+    expect(count(html, "demo-img-list")).toBe(1);
+    expect(count(html, "demo-visual-text")).toBe(listLength("type22", "contents"));
+  });
+
+  test("shows the sub list only when there are sub texts, and omits an empty title", () => {
+    const base = { image: "", imageMobile: "" };
+    const withSub = render("type22", { contents: [{ ...base, title: "제목", subtext: [{ text: "a" }, { text: "b" }] }] });
+    expect(count(withSub, "demo-unstyled-list")).toBe(1);
+    const without = render("type22", { contents: [{ ...base, title: "", subtext: [] }] });
+    expect(count(without, "demo-unstyled-list")).toBe(0);
+    expect(without).not.toContain("demo-title\"></p>");
+  });
+
+  test("the title is rich and the sub texts are plain", () => {
+    const html = render("type22", { contents: [{ image: "", imageMobile: "", title: "<em>t</em><script>x</script>", subtext: [{ text: "<em>s</em>" }] }] });
+    expect(html).toContain("<em>t</em>");
+    expect(html).toContain("&lt;em&gt;s&lt;/em&gt;");
+    expect(html.toLowerCase()).not.toContain("<script");
+  });
+
+  test("keeps the sub list within the limit", () => {
+    const many = Array.from({ length: 30 }, (_, i) => ({ text: `s${i}` }));
+    const html = render("type22", { contents: [{ image: "", imageMobile: "", title: "t", subtext: many }] });
+    expect(html.match(/<li>s\d+<\/li>/g)?.length ?? 0).toBeLessThanOrEqual(8);
+  });
+});
+
+describe("type 23", () => {
+  test("renders a centered text above one image pair", () => {
+    const html = render("type23");
+    expect(html).toContain('class="demo-block demo-type23"');
+    expect(count(html, "demo-center")).toBe(1);
+    expect(count(html, "demo-visual")).toBe(1);
+  });
+
+  test("omits the text box when the text is empty", () => {
+    expect(count(render("type23", { text: "" }), "demo-center")).toBe(0);
+  });
+
+  test("the text is rich and an empty big title leaves no empty paragraph", () => {
+    const html = render("type23", { text: "<em>ok</em><script>x</script>", title: [{ small: "작은", big: "" }] });
+    expect(html).toContain("<em>ok</em>");
+    expect(html.toLowerCase()).not.toContain("<script");
+    expect(html).not.toContain('<p class="demo-title"></p>');
+  });
+});
+
+describe("type 24", () => {
+  test("renders an image above a numbered list", () => {
+    const html = render("type24");
+    expect(html).toContain('class="demo-block demo-type24"');
+    expect(count(html, "demo-visual")).toBe(1);
+    expect(count(html, "demo-ordered-list")).toBe(1);
+    expect(count(html, "demo-list-item")).toBe(listLength("type24", "contents"));
+  });
+
+  test("omits an empty title or text and keeps rich markup", () => {
+    const html = render("type24", { contents: [{ tit: "", text: "<em>ok</em><script>x</script>" }] });
+    expect(html).toContain("<em>ok</em>");
+    expect(html.toLowerCase()).not.toContain("<script");
+    expect(html).not.toContain('<p class="demo-title"></p>');
+  });
+});
+
+describe("type 25", () => {
+  test("renders a column list with an item per content", () => {
+    const html = render("type25");
+    expect(html).toContain('class="demo-block demo-type25"');
+    expect(count(html, "demo-column-list")).toBe(1);
+    expect(count(html, "demo-visual")).toBe(listLength("type25", "contents"));
+  });
+
+  test("the per-row select maps to the column modifier", () => {
+    expect(count(render("type25", { perRow: "3" }), "demo-cols-3")).toBe(1);
+    expect(count(render("type25", { perRow: "4" }), "demo-cols-4")).toBe(1);
+  });
+
+  test("an unknown per-row value falls back to four columns", () => {
+    const html = render("type25", { perRow: "7" });
+    expect(count(html, "demo-cols-4")).toBe(1);
+    expect(html).not.toContain("demo-cols-7");
+  });
+
+  test("title and text are rich and empty ones are omitted", () => {
+    const html = render("type25", { contents: [{ image: "", imageMobile: "", title: "<em>t</em>", text: "<script>x</script>" }, { image: "", imageMobile: "", title: "", text: "" }] });
+    expect(html).toContain("<em>t</em>");
+    expect(html.toLowerCase()).not.toContain("<script");
+    expect(html).not.toContain('<p class="demo-title"></p>');
+  });
+});
