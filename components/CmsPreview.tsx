@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { renderHtml } from "@/lib/cms/format";
 import { buildPreviewDocument } from "@/lib/cms/preview";
 import { CMS_TYPES, getType } from "@/lib/cms/registry";
@@ -13,6 +13,12 @@ const COPY_FAIL = "복사하지 못했어요. 소스 창에서 직접 선택해 
 
 type PreviewWidth = "pc" | "mobile";
 
+// PC 미리보기는 원본 마크업의 PC 기준(Bootstrap lg, 992px)을 넘는 고정 폭이다. 영역이 더 좁으면 축소해서 보여 주되,
+// 글자가 너무 작아지지 않게 절반까지만 줄이고 그보다 좁으면 영역 안에서 가로로 스크롤한다.
+const PC_WIDTH = 1100;
+const PREVIEW_HEIGHT_REM = 32;
+const MIN_SCALE = 0.5;
+
 export default function CmsPreview() {
   const [typeId, setTypeId] = useState(CMS_TYPES[0].id);
   // 타입마다 입력값을 따로 메모리에 둔다. 처음 여는 타입은 기본값으로 시작하고, 타입을 오가도 입력이 남는다.
@@ -21,6 +27,18 @@ export default function CmsPreview() {
   // 미리보기 폭: PC는 영역 전체 폭, 모바일은 360px. 타입의 PC/모바일 이미지와 배치가 iframe 폭에 따라 바뀐다.
   const [previewWidth, setPreviewWidth] = useState<PreviewWidth>("pc");
   const sourceRef = useRef<HTMLTextAreaElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(1);
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const update = () => setScale(Math.max(MIN_SCALE, Math.min(1, el.clientWidth / PC_WIDTH)));
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   const type = getType(typeId) ?? CMS_TYPES[0];
   const values = normalizeValues(type.fields, store[type.id] ?? type.defaults);
@@ -125,14 +143,29 @@ export default function CmsPreview() {
             모바일 (360px)
           </label>
         </fieldset>
-        {/* PC는 원본 마크업의 PC 기준(Bootstrap lg, 992px)을 넘는 고정 폭이라, 영역이 좁으면 이 안에서만 가로로 스크롤된다. */}
-        <div className={styles.previewScroll}>
-          <iframe
-            title="HTML 미리보기"
-            className={`${styles.preview} ${previewWidth === "mobile" ? styles.previewMobile : styles.previewPc}`}
-            sandbox=""
-            srcDoc={buildPreviewDocument(html, type.css)}
-          />
+        <div ref={scrollRef} className={styles.previewScroll}>
+          {previewWidth === "pc" ? (
+            // 안쪽 상자가 축소된 크기를 차지해야 불필요한 가로 스크롤이 생기지 않는다(transform은 레이아웃 크기를 바꾸지 않는다).
+            <div
+              className={styles.previewBox}
+              style={{ width: PC_WIDTH * scale, height: `${PREVIEW_HEIGHT_REM * scale}rem` }}
+            >
+              <iframe
+                title="HTML 미리보기"
+                className={`${styles.preview} ${styles.previewPc}`}
+                style={{ transform: `scale(${scale})` }}
+                sandbox=""
+                srcDoc={buildPreviewDocument(html, type.css)}
+              />
+            </div>
+          ) : (
+            <iframe
+              title="HTML 미리보기"
+              className={`${styles.preview} ${styles.previewMobile}`}
+              sandbox=""
+              srcDoc={buildPreviewDocument(html, type.css)}
+            />
+          )}
         </div>
       </section>
     </div>

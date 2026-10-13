@@ -44,6 +44,7 @@ const ORIGINAL_CSS = `
   .cms-thin-title { font-size: 1.5rem; font-weight: 300; line-height: 1.3; }
   .cms-description { color: #4a5766; }
   .cms-description.larger { font-size: 1.0625rem; }
+  .type-bg { background: #f4f7fb; }
   .bg-color-1, .bg-color-2 { background: #eef3f9; }
   .bg-color-3 { background: #f4f7fb; }
   .bg-image-1, .bg-image-2 { background: #1d2733; border-color: #1d2733; color: #ffffff; }

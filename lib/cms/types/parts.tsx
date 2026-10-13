@@ -94,17 +94,24 @@ export function CmsHeader({
   values,
   hideEmptyBig = false,
   extraClass = "",
+  eyebrowSpace = false,
 }: {
   values: Values;
   hideEmptyBig?: boolean;
   extraClass?: string;
+  eyebrowSpace?: boolean; // 타입 02는 원본이 작은 글 뒤에 공백을 하나 붙인다.
 }) {
   const pair = items(values.title)[0] ?? {};
   const small = str(pair.small);
   const big = str(pair.big);
   return (
     <div className={`cms-header top-border${extraClass ? ` ${extraClass}` : ""}`}>
-      {small !== "" && <p className="cms-eyebrow">{small}</p>}
+      {small !== "" && (
+        <p className="cms-eyebrow">
+          {small}
+          {eyebrowSpace ? " " : ""}
+        </p>
+      )}
       {(!hideEmptyBig || big !== "") && <p className="cms-title">{big}</p>}
     </div>
   );

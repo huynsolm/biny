@@ -1,8 +1,7 @@
-import { richProps, items, str, type CmsType } from "../type";
-import { TitleBlock, listField, titleDefault, titleField } from "./parts";
+import { items, richProps, str, type CmsType } from "../type";
+import { CmsHeader, PentagonSvg, listField, titleDefault, titleField } from "./parts";
 
-// 원본 타입 02: 제목 + 항목 목록. 항목마다 도형 안의 글(작은 글, 핵심 글)과 아래 설명이 있다.
-// 원본의 오각형 SVG 경로는 가져오지 않고 CSS clip-path로 새로 그렸다.
+// 원본 타입 02와 같은 HTML을 만든다: 오각형 SVG 안에 작은 글과 핵심 글, 그 아래 설명.
 const type02: CmsType = {
   id: "type02",
   number: "02",
@@ -20,30 +19,31 @@ const type02: CmsType = {
     items: [1, 2, 3].map((n) => ({ stit: `항목 ${n}`, text: "핵심 문구", description: "설명을 입력해 보세요." })),
   },
   css: `
-    .demo-type02 { background: #f4f7fb; }
-    .demo-type02 .demo-figure-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); gap: 20px; }
-    .demo-type02 .demo-figure { display: flex; align-items: center; justify-content: center; aspect-ratio: 1 / 0.96; padding: 24px 16px; text-align: center; background: #3a6ea5; color: #ffffff; clip-path: polygon(50% 0, 100% 38%, 82% 100%, 18% 100%, 0 38%); }
-    .demo-type02 .demo-figure-text { display: flex; flex-direction: column; gap: 4px; }
-    .demo-type02 .demo-figure .demo-eyebrow { margin: 0; color: #cfe0f3; }
-    .demo-type02 .demo-figure .demo-desc { color: #ffffff; font-weight: 600; }
-    .demo-type02 .demo-description-box { margin-top: 12px; }
+    .type02 .cms-list-item { margin-bottom: 24px; text-align: center; }
+    .type02 .cms-figure { position: relative; width: 100%; max-width: 286px; margin: 0 auto 12px; }
+    .type02 .cms-figure-svg { display: block; width: 100%; height: auto; }
+    .type02 .cms-figure-svg .cls-1 { fill: #3a6ea5; }
+    .type02 .cms-figure-text { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 0 16px; }
+    .type02 .cms-figure-text .cms-eyebrow { margin: 0; color: #cfe0f3; }
+    .type02 .cms-figure-text .cms-description { color: #ffffff; font-weight: 600; }
   `,
   View: ({ values }) => (
-    <section className="demo-block demo-type02">
-      <div className="demo-inner">
-        <TitleBlock values={values} />
-        <div className="demo-list-wrap">
-          <ol className="demo-figure-list">
+    <section className="cms type02 type-bg">
+      <div className="cms-inner">
+        <CmsHeader values={values} eyebrowSpace />
+        <div className="cms-list-wrap">
+          <ol className="cms-figure-list text-type-1 row justify-content-center">
             {items(values.items).map((item, index) => (
-              <li key={index} className="demo-list-item">
-                <div className="demo-figure">
-                  <div className="demo-figure-text">
-                    <p className="demo-eyebrow">{str(item.stit)}</p>
-                    <p className="demo-desc">{str(item.text)}</p>
+              <li key={index} className="cms-list-item col-6 col-lg-4">
+                <div className="cms-figure pentagon">
+                  <PentagonSvg />
+                  <div className="cms-figure-text">
+                    <p className="cms-eyebrow">{str(item.stit)}</p>
+                    <p className="cms-description">{str(item.text)}</p>
                   </div>
                 </div>
-                <div className="demo-description-box">
-                  <p className="demo-desc" {...richProps(item.description)} />
+                <div className="cms-description-box">
+                  <p className="cms-description" {...richProps(item.description)} />
                 </div>
               </li>
             ))}

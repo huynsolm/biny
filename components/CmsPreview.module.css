@@ -131,8 +131,14 @@ textarea.control {
   background: #ffffff;
 }
 
+.previewBox {
+  position: relative;
+  overflow: hidden;
+}
+
 .previewPc {
   width: 1100px;
+  transform-origin: top left;
 }
 
 .previewMobile {

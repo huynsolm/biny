@@ -1,8 +1,9 @@
 import { items, richProps, str, type CmsType } from "../type";
-import { Pictures, TitleBlock, imageDefaults, imageFields, listField, titleDefault, titleField } from "./parts";
+import { CmsHeader, Img, imageDefaults, imageFields, listField, titleDefault, titleField } from "./parts";
 
-// 원본 타입 03: 제목 + 이미지와 글이 번갈아 놓이는 목록(지그재그). 선택 변형은 시작 방향(일반/반전)이다.
-const LAYOUTS = ["normal", "reverse"];
+// 원본 타입 03과 같은 HTML을 만든다. 선택 변형은 원본 값 그대로 ""(일반) / "reverse"(반전)이고,
+// 원본처럼 목록 클래스 끝에 이 값이 붙는다(일반이면 끝에 공백이 남는다). 목록에 없는 값은 일반으로 바꾼다.
+const LAYOUTS = ["", "reverse"];
 
 const type03: CmsType = {
   id: "type03",
@@ -15,7 +16,7 @@ const type03: CmsType = {
       key: "layout",
       label: "배치",
       options: [
-        { value: "normal", label: "일반 (이미지가 왼쪽부터)" },
+        { value: "", label: "일반 (이미지가 왼쪽부터)" },
         { value: "reverse", label: "반전 (이미지가 오른쪽부터)" },
       ],
     },
@@ -28,37 +29,38 @@ const type03: CmsType = {
   ],
   defaults: {
     title: titleDefault,
-    layout: "normal",
+    layout: "",
     contents: [1, 2].map((n) => ({ num: `0${n}`, tit: `항목 ${n} 제목`, text: "설명을 입력해 보세요.", ...imageDefaults })),
   },
   css: `
-    .demo-type03 .demo-tile-list { display: flex; flex-direction: column; gap: 24px; }
-    .demo-type03 .demo-list-item { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; align-items: center; }
-    .demo-type03 .demo-box-inner { display: flex; flex-direction: column; gap: 6px; }
-    .demo-type03 .demo-box-inner .demo-title { font-size: 1.25rem; }
-    @media (min-width: 48rem) {
-      .demo-type03 .demo-list-item { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
-      .demo-type03 .demo-zigzag .demo-list-item:nth-child(even) .demo-visual { order: 2; }
-      .demo-type03 .demo-zigzag.demo-reverse .demo-list-item:nth-child(odd) .demo-visual { order: 2; }
-      .demo-type03 .demo-zigzag.demo-reverse .demo-list-item:nth-child(even) .demo-visual { order: 0; }
+    .type03 .cms-tile-list { display: flex; flex-direction: column; gap: 24px; }
+    .type03 .cms-box-inner { display: flex; flex-direction: column; gap: 6px; }
+    .type03 .cms-box-inner .cms-title { font-size: 1.25rem; }
+    @media (min-width: 992px) {
+      .type03 .array-zigzag > .cms-list-item:nth-child(even) .cms-visual { order: 2; }
+      .type03 .array-zigzag.reverse > .cms-list-item:nth-child(odd) .cms-visual { order: 2; }
+      .type03 .array-zigzag.reverse > .cms-list-item:nth-child(even) .cms-visual { order: 0; }
     }
   `,
   View: ({ values }) => {
-    const reverse = LAYOUTS.includes(str(values.layout)) && str(values.layout) === "reverse";
+    const selected = LAYOUTS.includes(str(values.layout)) ? str(values.layout) : "";
     return (
-      <section className="demo-block demo-type03">
-        <div className="demo-inner">
-          <TitleBlock values={values} />
-          <div className="demo-list-wrap">
-            <ol className={reverse ? "demo-tile-list demo-zigzag demo-reverse" : "demo-tile-list demo-zigzag"}>
+      <section className="cms type03">
+        <div className="cms-inner">
+          <CmsHeader values={values} />
+          <div className="cms-list-wrap">
+            <ol className={`cms-tile-list array-zigzag text-type-1 ${selected}`}>
               {items(values.contents).map((item, index) => (
-                <li key={index} className="demo-list-item">
-                  <Pictures image={item.image} imageMobile={item.imageMobile} />
-                  <div className="demo-description-box">
-                    <div className="demo-box-inner">
-                      <p className="demo-eyebrow">{str(item.num)}</p>
-                      <p className="demo-title" {...richProps(item.tit)} />
-                      <p className="demo-desc" {...richProps(item.text)} />
+                <li key={index} className="cms-list-item row align-items-center">
+                  <div className="cms-visual col-lg-6">
+                    <Img value={item.image} kind="pc" className="img-fluid d-none d-lg-block" />
+                    <Img value={item.imageMobile} kind="mobile" className="img-fluid d-block d-lg-none" />
+                  </div>
+                  <div className="cms-description-box col-lg-6">
+                    <div className="cms-box-inner">
+                      <p className="cms-eyebrow type-number">{str(item.num)}</p>
+                      <p className="cms-title" {...richProps(item.tit)} />
+                      <p className="cms-description" {...richProps(item.text)} />
                     </div>
                   </div>
                 </li>

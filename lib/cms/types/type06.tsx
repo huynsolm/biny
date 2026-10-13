@@ -1,9 +1,8 @@
-/* eslint-disable @next/next/no-img-element -- HTML 소스를 만들기 위한 데모 마크업이라 next/image를 쓰지 않는다 */
-import { items, mobileImage, pcImage, richProps, str, type CmsType } from "../type";
-import { TitleBlock, imageDefaults, imageFields, listField, titleDefault, titleField } from "./parts";
+import { items, richProps, str, type CmsType } from "../type";
+import { CmsHeader, Img, imageDefaults, imageFields, listField, titleDefault, titleField } from "./parts";
 
-// 원본 타입 06: 어두운 바탕의 칸 목록. 칸마다 아이콘(PC/모바일), 글, 그리고 있으면 글머리 목록(하위 목록)이 있다.
-// 하위 목록이 있는 칸은 글을 굵게 보여 주고, 없는 칸은 일반 글로 보여 준다.
+// 원본 타입 06과 같은 HTML을 만든다: 어두운 바탕의 4칸 목록. 칸마다 아이콘(PC/모바일)과 글이 있고,
+// 하위 목록이 있는 칸은 글을 굵게 보여 주며 글머리 목록을 붙이고, 없는 칸은 일반 글만 보여 준다.
 const type06: CmsType = {
   id: "type06",
   number: "06",
@@ -26,50 +25,43 @@ const type06: CmsType = {
     ],
   },
   css: `
-    .demo-type06 { background: #1d2733; border-color: #1d2733; color: #ffffff; }
-    .demo-type06 .demo-header { border-top-color: #ffffff; }
-    .demo-type06 .demo-eyebrow { color: #9db8d6; }
-    .demo-type06 .demo-column-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr)); gap: 16px; }
-    .demo-type06 .demo-inner-box { display: flex; flex-direction: column; gap: 12px; height: 100%; padding: 16px; border: 1px solid #3b4a5c; }
-    .demo-type06 .demo-icon img { width: 56px; height: auto; }
-    .demo-type06 .demo-desc { color: #d7dee6; }
-    .demo-type06 .demo-desc strong { color: #ffffff; }
-    .demo-type06 .demo-bullet-list { margin: 8px 0 0; padding-left: 1.1rem; list-style: disc; }
-    .demo-type06 .demo-bullet-list .demo-list-item { color: #d7dee6; }
+    .type06 .cms-column-list > .cms-list-item { margin-bottom: 16px; }
+    .type06 .cms-inner-box { display: flex; flex-direction: column; gap: 12px; height: 100%; padding: 16px; border: 1px solid #3b4a5c; }
+    .type06 .cms-icon img { width: 56px; height: auto; }
+    .type06 .cms-description strong { color: #ffffff; }
+    .type06 .cms-bullet-list.no-margin { margin: 8px 0 0; padding-left: 1.1rem; list-style: disc; }
   `,
   View: ({ values }) => (
-    <section className="demo-block demo-type06">
-      <div className="demo-inner">
-        <TitleBlock values={values} />
-        <div className="demo-list-wrap">
-          <ul className="demo-column-list">
+    <section className="cms type06 type-bg bg-image-1 text-white">
+      <div className="cms-inner">
+        <CmsHeader values={values} />
+        <div className="cms-list-wrap">
+          <ul className="cms-column-list item-bg-box text-type-1 row">
             {items(values.contents).map((item, index) => {
               const subtexts = items(item.subtext);
               return (
-                <li key={index} className="demo-list-item">
-                  <div className="demo-inner-box">
-                    <div className="demo-icon">
-                      {str(item.image).trim() !== "" && <img className="demo-pc-only" src={pcImage(item.image)} alt="" />}
-                      {str(item.imageMobile).trim() !== "" && (
-                        <img className="demo-mobile-only" src={mobileImage(item.imageMobile)} alt="" />
-                      )}
+                <li key={index} className="cms-list-item col-6 col-lg-3">
+                  <div className="cms-inner-box">
+                    <div className="cms-icon">
+                      <Img value={item.image} kind="pc" className="d-none d-lg-block" />
+                      <Img value={item.imageMobile} kind="mobile" className="d-block d-lg-none" />
                     </div>
                     {subtexts.length > 0 ? (
-                      <div className="demo-description-box">
-                        <p className="demo-desc">
+                      <div className="cms-description-box">
+                        <p className="cms-description">
                           <strong {...richProps(item.text)} />
                         </p>
-                        <ul className="demo-bullet-list">
+                        <ul className="cms-bullet-list no-margin">
                           {subtexts.map((sub, subIndex) => (
-                            <li key={subIndex} className="demo-list-item demo-desc">
+                            <li key={subIndex} className="cms-list-item cms-description">
                               {str(sub.text)}
                             </li>
                           ))}
                         </ul>
                       </div>
                     ) : (
-                      <div className="demo-description-box">
-                        <p className="demo-desc" {...richProps(item.text)} />
+                      <div className="cms-description-box">
+                        <p className="cms-description" {...richProps(item.text)} />
                       </div>
                     )}
                   </div>
