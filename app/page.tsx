@@ -3,6 +3,7 @@ import Career from "@/components/Career";
 import Contact from "@/components/Contact";
 import Hero from "@/components/Hero";
 import Method from "@/components/Method";
+import Operations from "@/components/Operations";
 import ProjectList from "@/components/ProjectList";
 import SectionHeading from "@/components/SectionHeading";
 import Skills from "@/components/Skills";
@@ -23,6 +24,7 @@ export default function Home() {
         <SectionHeading id="projects-title" number="03" name="projects" />
         <ProjectList projects={projects} />
       </section>
+      <Operations />
       <Skills />
       <Method />
       <Contact />

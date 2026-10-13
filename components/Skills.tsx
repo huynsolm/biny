@@ -16,7 +16,7 @@ const GROUPS: { label: string; items: string[] }[] = [
 export default function Skills() {
   return (
     <section id="skills" className={`container ${styles.skills}`} aria-labelledby="skills-title">
-      <SectionHeading id="skills-title" number="04" name="stack" />
+      <SectionHeading id="skills-title" number="05" name="stack" />
       <dl className={styles.list}>
         {GROUPS.map((group) => (
           <div key={group.label} className={styles.row}>
