@@ -1,7 +1,8 @@
 import { items, richProps, str, type CmsType } from "../type";
-import { Pictures, TitleBlock, imageDefaults, imageFields, listField, titleDefault, titleField } from "./parts";
+import { CmsHeader, Img, imageDefaults, imageFields, listField, titleDefault, titleField } from "./parts";
 
-// 원본 타입 21: 왼쪽 정렬 머리글, 이미지 한 장 옆에 테두리 목록. 비어 있는 목록 글은 넣지 않는다.
+// 원본 타입 21과 같은 HTML을 만든다: 왼쪽 정렬 머리글, 이미지 한 장 옆에 테두리 목록.
+// 원본은 머리글의 큰 글이 비면 넣지 않고, 모바일 이미지는 PC 이미지가 있을 때만 보여 준다.
 const type21: CmsType = {
   id: "type21",
   number: "21",
@@ -13,34 +14,35 @@ const type21: CmsType = {
     contents: [1, 2, 3, 4].map((n) => ({ text: `목록 ${n}` })),
   },
   css: `
-    .demo-type21 .demo-column-wrap { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; align-items: center; }
-    .demo-type21 .demo-border-list { display: flex; flex-wrap: wrap; gap: 8px; }
-    .demo-type21 .demo-border-list .demo-list-item { padding: 6px 12px; border: 1px solid #3a6ea5; }
-    .demo-type21 .demo-border-list .demo-title { font-size: 1rem; }
-    @media (min-width: 48rem) {
-      .demo-type21 .demo-column-wrap { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 28px; }
-    }
+    .type21 .cms-header.left-type { text-align: left; }
+    .type21 .cms-column-wrap { row-gap: 20px; align-items: center; }
+    .type21 .cms-border-list { row-gap: 8px; }
+    .type21 .cms-border-list .cms-title { padding: 4px 12px; border: 1px solid #3a6ea5; font-size: 1rem; }
   `,
   View: ({ values }) => (
-    <section className="demo-block demo-type21">
-      <div className="demo-inner">
-        <div className="demo-left">
-          <TitleBlock values={values} />
-        </div>
-        <div className="demo-column-wrap">
-          <Pictures image={values.image} imageMobile={values.imageMobile} />
-          <div className="demo-box">
-            <div className="demo-list-wrap">
-              <ul className="demo-border-list">
-                {items(values.contents)
-                  .filter((item) => str(item.text).trim() !== "")
-                  .map((item, index) => (
-                    <li key={index} className="demo-list-item">
-                      <div className="demo-description-box">
-                        <p className="demo-title" {...richProps(item.text)} />
-                      </div>
-                    </li>
-                  ))}
+    <section className="cms type21">
+      <div className="cms-inner">
+        <CmsHeader values={values} hideEmptyBig extraClass="left-type" />
+        <div className="cms-column-wrap box-type row">
+          <div className="cms-visual col-12 col-lg-5">
+            <Img value={values.image} kind="pc" className="img-fluid d-none d-lg-block" />
+            <Img
+              value={values.imageMobile}
+              kind="mobile"
+              className="w-100 d-block d-lg-none"
+              gate={str(values.image).trim() !== ""}
+            />
+          </div>
+          <div className="cms-box col-12 col-lg-7">
+            <div className="cms-list-wrap">
+              <ul className="cms-border-list text-type-2 row">
+                {items(values.contents).map((item, index) => (
+                  <li key={index} className="cms-list-item col-6 col-lg-auto">
+                    <div className="cms-description-box">
+                      {str(item.text).trim() !== "" && <p className="cms-title" {...richProps(item.text)} />}
+                    </div>
+                  </li>
+                ))}
               </ul>
             </div>
           </div>

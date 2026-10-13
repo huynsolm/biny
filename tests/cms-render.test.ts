@@ -5,13 +5,30 @@ import { type01 } from "@/lib/cms/types/type01";
 
 const withValues = (patch: Record<string, string>) => ({ ...type01.defaults, ...patch });
 
-describe("renderHtml (type 01)", () => {
-  test("renders defaults with only demo- classes and the type class", () => {
+describe("renderHtml (type 01, original markup)", () => {
+  test("renders the same markup as the original type 01", () => {
     const html = renderHtml(type01, type01.defaults);
-    expect(html).toContain('class="demo-block demo-type01"');
-    const tokens = [...html.matchAll(/class="([^"]*)"/g)].flatMap((m) => m[1].split(/\s+/));
-    expect(tokens.length).toBeGreaterThan(0);
-    for (const token of tokens) expect(token, token).toMatch(/^demo-/);
+    const expected = [
+      '<section class="cms type01">',
+      '  <div class="cms-inner">',
+      '    <div class="cms-header">',
+      '      <p class="cms-thin-title">제목을 입력해 보세요</p>',
+      "    </div>",
+      '    <div class="cms-visual">',
+      '      <img src="/images/cms-sample.svg" alt="" class="img-fluid d-none d-lg-block"/>',
+      '      <img src="/images/cms-sample-m.svg" alt="" class="w-100 d-block d-lg-none"/>',
+      "    </div>",
+      '    <div class="cms-description-box">',
+      '      <p class="cms-description larger">입력한 내용이 HTML 소스와 미리보기에 바로 반영돼요.</p>',
+      "    </div>",
+      "  </div>",
+      "</section>",
+    ].join("\n");
+    expect(html).toBe(expected);
+  });
+
+  test("uses no demo- classes", () => {
+    expect(renderHtml(type01, type01.defaults)).not.toContain("demo-");
   });
 
   test("escapes script in a rich field and keeps allowed tags", () => {
@@ -52,13 +69,7 @@ describe("renderHtml (type 01)", () => {
   test("keeps a valid https image and omits an empty one", () => {
     const html = renderHtml(type01, withValues({ image: "https://example.com/a.png", imageMobile: "" }));
     expect(html).toContain('src="https://example.com/a.png"');
-    expect(html).not.toContain("demo-mobile-only");
-  });
-
-  test("the pc and mobile images use the switch classes", () => {
-    const html = renderHtml(type01, type01.defaults);
-    expect(html).toContain("demo-pc-only");
-    expect(html).toContain("demo-mobile-only");
+    expect(html).not.toContain("d-lg-none");
   });
 
   test("does not leak React resource hints such as <link rel=preload> into the source", () => {
@@ -68,9 +79,7 @@ describe("renderHtml (type 01)", () => {
     expect(html.startsWith("<section")).toBe(true);
   });
 
-  test("formats the source over several lines without a trailing newline", () => {
-    const html = renderHtml(type01, type01.defaults);
-    expect(html.split("\n").length).toBeGreaterThan(3);
-    expect(html.endsWith("\n")).toBe(false);
+  test("has no trailing newline", () => {
+    expect(renderHtml(type01, type01.defaults).endsWith("\n")).toBe(false);
   });
 });

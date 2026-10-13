@@ -1,9 +1,8 @@
 import { items, richProps, str, type CmsType } from "../type";
-import { TitleBlock, listField, titleDefault, titleField } from "./parts";
+import { CmsHeader, listField, titleDefault, titleField } from "./parts";
 
-// 원본 타입 17: 제목 칸과 설명 칸이 한 줄씩 이어지는 행 목록. 선택 변형은 제목 칸의 폭이다.
-// (원본 값은 col-auto / col-2였고, 이 데모에서는 의미에 맞게 auto / wide로 쓴다.)
-const WIDTHS = ["auto", "wide"];
+// 원본 타입 17과 같은 HTML을 만든다: 제목 칸과 설명 칸이 한 줄씩 이어지는 행 목록. 선택 변형은 제목 칸의 열 클래스(원본 값)다.
+const WIDTHS = ["col-auto", "col-2"];
 
 const type17: CmsType = {
   id: "type17",
@@ -16,8 +15,8 @@ const type17: CmsType = {
       key: "titleWidth",
       label: "제목 칸 폭",
       options: [
-        { value: "auto", label: "글자 길이만큼" },
-        { value: "wide", label: "넓게" },
+        { value: "col-auto", label: "글자 길이만큼" },
+        { value: "col-2", label: "넓게" },
       ],
     },
     listField("contents", "행", "행", [
@@ -27,32 +26,28 @@ const type17: CmsType = {
   ],
   defaults: {
     title: titleDefault,
-    titleWidth: "auto",
+    titleWidth: "col-auto",
     contents: [1, 2, 3, 4].map((n) => ({ tit: `제목 ${n}`, text: "설명을 입력해 보세요." })),
   },
   css: `
-    .demo-type17 .demo-row-list { display: flex; flex-direction: column; border-top: 2px solid #1d2733; }
-    .demo-type17 .demo-list-item { padding: 14px 0; border-bottom: 1px solid #d5dce4; }
-    .demo-type17 .demo-description-box { display: grid; grid-template-columns: minmax(0, 1fr); gap: 4px 24px; }
-    .demo-type17 .demo-description-box .demo-title { font-size: 1.0625rem; }
-    @media (min-width: 40rem) {
-      .demo-type17 .demo-title-auto .demo-description-box { grid-template-columns: max-content minmax(0, 1fr); }
-      .demo-type17 .demo-title-wide .demo-description-box { grid-template-columns: 12rem minmax(0, 1fr); }
-    }
+    .type17 .cms-row-list { border-top: 2px solid #1d2733; }
+    .type17 .cms-list-item { padding: 14px 0; border-bottom: 1px solid #d5dce4; }
+    .type17 .cms-description-box { align-items: baseline; row-gap: 4px; }
+    .type17 .cms-description-box .cms-title { font-size: 1.0625rem; }
   `,
   View: ({ values }) => {
-    const width = WIDTHS.includes(str(values.titleWidth)) ? str(values.titleWidth) : "auto";
+    const width = WIDTHS.includes(str(values.titleWidth)) ? str(values.titleWidth) : "col-auto";
     return (
-      <section className="demo-block demo-type17">
-        <div className="demo-inner">
-          <TitleBlock values={values} />
-          <div className="demo-list-wrap">
-            <ol className={`demo-row-list demo-title-${width}`}>
+      <section className="cms type17">
+        <div className="cms-inner">
+          <CmsHeader values={values} />
+          <div className="cms-list-wrap">
+            <ol className="cms-row-list text-type-1">
               {items(values.contents).map((item, index) => (
-                <li key={index} className="demo-list-item">
-                  <div className="demo-description-box">
-                    <p className="demo-title">{str(item.tit)}</p>
-                    <p className="demo-desc" {...richProps(item.text)} />
+                <li key={index} className="cms-list-item">
+                  <div className="cms-description-box row">
+                    <p className={`cms-title ${width}`}>{str(item.tit)}</p>
+                    <p className="cms-description col" {...richProps(item.text)} />
                   </div>
                 </li>
               ))}

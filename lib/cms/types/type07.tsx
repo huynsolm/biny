@@ -1,7 +1,7 @@
 import { items, str, type CmsType } from "../type";
-import { Pictures, TitleBlock, imageDefaults, imageFields, listField, titleDefault, titleField } from "./parts";
+import { CmsHeader, Img, imageDefaults, imageFields, listField, titleDefault, titleField } from "./parts";
 
-// 원본 타입 07: 제목 + 이미지 한 장과 글머리 목록을 나란히. 원본은 contents[0] 하나만 쓰므로 필드를 평평하게 편다.
+// 원본 타입 07과 같은 HTML을 만든다: 이미지 한 장과 글머리 목록을 나란히. 원본은 contents[0]만 쓰므로 필드를 평평하게 편다.
 const type07: CmsType = {
   id: "type07",
   number: "07",
@@ -17,26 +17,25 @@ const type07: CmsType = {
     subtext: [1, 2, 3].map((n) => ({ text: `내용 ${n}` })),
   },
   css: `
-    .demo-type07 { background: #f4f7fb; }
-    .demo-type07 .demo-column-wrap { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; align-items: center; }
-    .demo-type07 .demo-bullet-list { display: flex; flex-direction: column; gap: 12px; padding-left: 1.1rem; list-style: disc; }
-    .demo-type07 .demo-bullet-list .demo-list-item { color: #1d2733; }
-    @media (min-width: 48rem) {
-      .demo-type07 .demo-column-wrap { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px; }
-    }
+    .type07 .cms-column-wrap { align-items: center; }
+    .type07 .cms-visual { margin-bottom: 16px; }
+    .type07 .cms-bullet-list { display: flex; flex-direction: column; gap: 12px; padding-left: 1.1rem; list-style: disc; }
   `,
   View: ({ values }) => (
-    <section className="demo-block demo-type07">
-      <div className="demo-inner">
-        <TitleBlock values={values} />
-        <div className="demo-column-wrap">
-          <Pictures image={values.image} imageMobile={values.imageMobile} />
-          <div className="demo-list-wrap">
-            <ul className="demo-bullet-list">
+    <section className="cms type07 type-bg bg-color-3">
+      <div className="cms-inner">
+        <CmsHeader values={values} />
+        <div className="cms-column-wrap box-type row">
+          <div className="cms-visual col-12 col-lg-6">
+            <Img value={values.image} kind="pc" className="img-fluid d-none d-lg-block" />
+            <Img value={values.imageMobile} kind="mobile" className="w-100 d-block d-lg-none" />
+          </div>
+          <div className="cms-list-wrap col-12 col-lg-6">
+            <ul className="cms-bullet-list list-style-1 cms-spread-list">
               {items(values.subtext).map((sub, index) => (
-                <li key={index} className="demo-list-item">
-                  <div className="demo-description-box">
-                    <p className="demo-desc">{str(sub.text)}</p>
+                <li key={index} className="cms-list-item">
+                  <div className="cms-description-box">
+                    <p className="cms-description">{str(sub.text)}</p>
                   </div>
                 </li>
               ))}

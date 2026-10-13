@@ -1,9 +1,8 @@
-/* eslint-disable @next/next/no-img-element -- HTML 소스를 만들기 위한 데모 마크업이라 next/image를 쓰지 않는다 */
 import { DEFAULT_IMAGE_SRC } from "../html";
-import { items, pcImage, richProps, str, type CmsType } from "../type";
-import { TitleBlock, listField, titleDefault, titleField } from "./parts";
+import { items, richProps, str, type CmsType } from "../type";
+import { CmsHeader, HexagonSvg, Img, listField, titleDefault, titleField } from "./parts";
 
-// 원본 타입 16: 제목 + 큰 이미지(PC) / 도형 안의 글(모바일) + 이미지 아이콘이 붙은 2칸 목록.
+// 원본 타입 16과 같은 HTML을 만든다: 제목 + 큰 이미지(PC) / 도형 안의 글(모바일) + 이미지 아이콘이 붙은 2칸 목록.
 // 큰 이미지는 PC에서만, 도형은 모바일에서만 보인다. 항목의 아이콘은 한 장이다.
 const type16: CmsType = {
   id: "type16",
@@ -26,42 +25,43 @@ const type16: CmsType = {
     contents: [1, 2, 3, 4].map((n) => ({ tit: `칸 ${n}`, text: "설명을 입력해 보세요.", icon: DEFAULT_IMAGE_SRC })),
   },
   css: `
-    .demo-type16 .demo-hexagon { display: flex; align-items: center; justify-content: center; width: 12rem; max-width: 100%; margin: 0 auto; aspect-ratio: 1.13 / 1; text-align: center; background: #3a6ea5; color: #ffffff; clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%); }
-    .demo-type16 .demo-hexagon .demo-title { padding: 0 20px; font-size: 1.125rem; }
-    .demo-type16 .demo-column-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
-    .demo-type16 .demo-column-list > .demo-list-item { display: flex; flex-direction: column; gap: 10px; }
-    .demo-type16 .demo-icon img { width: 56px; height: auto; }
-    .demo-type16 .demo-description-box { display: flex; flex-direction: column; gap: 4px; }
-    .demo-type16 .demo-description-box .demo-title { font-size: 1.125rem; }
-    @media (min-width: 48rem) {
-      .demo-type16 .demo-mobile-only { display: none; }
-      .demo-type16 .demo-column-list { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .type16 .cms-figure.hexagon { position: relative; width: 12rem; height: 10.6rem; margin: 0 auto; }
+    .type16 .cms-figure.hexagon svg { display: block; width: 100%; height: 100%; }
+    .type16 .cms-figure.hexagon .cls-1 { fill: #3a6ea5; }
+    .type16 .cms-figure-text { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: 0 20px; text-align: center; color: #ffffff; }
+    .type16 .cms-figure-text .cms-title { font-size: 1.125rem; color: #ffffff; }
+    .type16 .cms-column-list { row-gap: 20px; }
+    .type16 .cms-icon { margin-bottom: 10px; }
+    .type16 .cms-icon img { width: 56px; height: auto; }
+    .type16 .cms-description-box { display: flex; flex-direction: column; gap: 4px; }
+    .type16 .cms-description-box .cms-title { font-size: 1.125rem; }
+    @media (min-width: 992px) {
+      .type16 .cms-column-list > .cms-list-item { flex: 0 0 25%; width: 25%; }
     }
   `,
   View: ({ values }) => (
-    <section className="demo-block demo-type16">
-      <div className="demo-inner">
-        <TitleBlock values={values} />
-        <div className="demo-visual">
-          {str(values.imagePc).trim() !== "" && <img className="demo-pc-only" src={pcImage(values.imagePc)} alt="" />}
-          <div className="demo-figure demo-hexagon demo-mobile-only">
-            <div className="demo-figure-text">
-              <p className="demo-title">{str(values.imageTit)}</p>
+    <section className="cms type16">
+      <div className="cms-inner">
+        <CmsHeader values={values} />
+        <div className="cms-visual">
+          <Img value={values.imagePc} kind="pc" className="img-fluid d-none d-lg-block" />
+          <div className="cms-figure hexagon d-block d-lg-none">
+            <HexagonSvg />
+            <div className="cms-figure-text">
+              <p className="cms-title">{str(values.imageTit)}</p>
             </div>
           </div>
         </div>
-        <div className="demo-list-wrap">
-          <ul className="demo-column-list">
+        <div className="cms-list-wrap cms-desktop-rs-only">
+          <ul className="cms-column-list text-type-1 row">
             {items(values.contents).map((item, index) => (
-              <li key={index} className="demo-list-item">
-                {str(item.icon).trim() !== "" && (
-                  <div className="demo-icon">
-                    <img src={pcImage(item.icon)} alt="" />
-                  </div>
-                )}
-                <div className="demo-description-box">
-                  <p className="demo-title">{str(item.tit)}</p>
-                  <p className="demo-desc" {...richProps(item.text)} />
+              <li key={index} className="cms-list-item col-6">
+                <div className="cms-icon">
+                  <Img value={item.icon} kind="pc" className="" />
+                </div>
+                <div className="cms-description-box">
+                  <p className="cms-title">{str(item.tit)}</p>
+                  <p className="cms-description" {...richProps(item.text)} />
                 </div>
               </li>
             ))}

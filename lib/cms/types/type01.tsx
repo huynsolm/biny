@@ -1,9 +1,9 @@
-/* eslint-disable @next/next/no-img-element -- HTML 소스를 만들기 위한 데모 마크업이라 next/image를 쓰지 않는다 */
 import { DEFAULT_IMAGE_SRC, DEFAULT_MOBILE_IMAGE_SRC } from "../html";
-import { mobileImage, pcImage, richProps, str, type CmsType } from "../type";
+import { richProps, type CmsType } from "../type";
+import { Img } from "./parts";
 
-// 원본 타입 01의 구조(제목, 이미지 PC/모바일, 설명)를 따른다. 클래스와 CSS, 문구는 새로 썼다.
-// 원본처럼 이미지 주소가 비어 있으면 그 이미지는 넣지 않는다.
+// 원본 타입 01과 같은 HTML을 만든다(클래스 이름, 요소 중첩, 이미지가 비어 있으면 넣지 않는 조건).
+// 머리글은 이 타입만 top-border 없이 cms-thin-title 하나다. 이미지 alt는 원본의 의미 없는 "box" 대신 빈 값이다.
 const type01: CmsType = {
   id: "type01",
   number: "01",
@@ -21,26 +21,21 @@ const type01: CmsType = {
     description: "입력한 내용이 HTML 소스와 미리보기에 바로 반영돼요.",
   },
   css: `
-    .demo-type01 .demo-inner { gap: 16px; }
-    .demo-type01 .demo-header { padding-top: 0; border-top: 0; }
-    .demo-type01 .demo-title { margin: 0; font-size: 1.5rem; font-weight: 300; line-height: 1.3; }
-    .demo-type01 .demo-visual img { width: 100%; height: auto; }
-    .demo-type01 .demo-desc { margin: 0; font-size: 1.0625rem; color: #4a5766; }
+    .type01 .cms-inner { gap: 16px; }
+    .type01 .cms-visual img { width: 100%; height: auto; }
   `,
   View: ({ values }) => (
-    <section className="demo-block demo-type01">
-      <div className="demo-inner">
-        <div className="demo-header">
-          <p className="demo-title" {...richProps(values.title)} />
+    <section className="cms type01">
+      <div className="cms-inner">
+        <div className="cms-header">
+          <p className="cms-thin-title" {...richProps(values.title)} />
         </div>
-        <div className="demo-visual">
-          {str(values.image).trim() !== "" && <img className="demo-pc-only" src={pcImage(values.image)} alt="" />}
-          {str(values.imageMobile).trim() !== "" && (
-            <img className="demo-mobile-only" src={mobileImage(values.imageMobile)} alt="" />
-          )}
+        <div className="cms-visual">
+          <Img value={values.image} kind="pc" className="img-fluid d-none d-lg-block" />
+          <Img value={values.imageMobile} kind="mobile" className="w-100 d-block d-lg-none" />
         </div>
-        <div className="demo-description-box">
-          <p className="demo-desc" {...richProps(values.description)} />
+        <div className="cms-description-box">
+          <p className="cms-description larger" {...richProps(values.description)} />
         </div>
       </div>
     </section>

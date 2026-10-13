@@ -9,7 +9,7 @@ export type CmsType = {
   label: string; // "타입 01 · 짧은 설명"
   fields: Field[];
   defaults: Values;
-  css: string; // 이 타입의 레이아웃. ".demo-typeNN" 범위 안에서만 쓴다.
+  css: string; // 이 타입의 레이아웃. ".typeNN" 범위 안에서만 쓴다.
   View: (props: { values: Values }) => ReactElement;
 };
 

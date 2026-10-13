@@ -1,7 +1,7 @@
 import { items, richProps, str, type CmsType } from "../type";
-import { Pictures, TitleBlock, imageDefaults, imageFields, listField, titleDefault, titleField } from "./parts";
+import { CmsHeader, Img, imageDefaults, imageFields, listField, titleDefault, titleField } from "./parts";
 
-// 원본 타입 15: 이미지가 위에 놓인 3칸 목록. 칸마다 제목과, 하위 목록이 있으면 글머리 목록을, 없으면 문단을 보여 준다.
+// 원본 타입 15와 같은 HTML을 만든다: 이미지가 위에 놓인 3칸 목록. 칸마다 제목과, 하위 목록이 있으면 글머리 목록을, 없으면 문단을 보여 준다.
 const type15: CmsType = {
   id: "type15",
   number: "15",
@@ -24,35 +24,38 @@ const type15: CmsType = {
     ],
   },
   css: `
-    .demo-type15 .demo-column-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); gap: 20px; }
-    .demo-type15 .demo-column-list > .demo-list-item { display: flex; flex-direction: column; gap: 12px; }
-    .demo-type15 .demo-description-box { display: flex; flex-direction: column; gap: 6px; }
-    .demo-type15 .demo-title { font-size: 1.125rem; }
-    .demo-type15 .demo-bullet-list { padding-left: 1.1rem; list-style: disc; }
+    .type15 .cms-column-list { row-gap: 20px; }
+    .type15 .cms-visual { margin-bottom: 12px; }
+    .type15 .cms-description-box { display: flex; flex-direction: column; gap: 6px; }
+    .type15 .cms-title { font-size: 1.125rem; }
+    .type15 .cms-bullet-list { padding-left: 1.1rem; list-style: disc; }
   `,
   View: ({ values }) => (
-    <section className="demo-block demo-type15">
-      <div className="demo-inner">
-        <TitleBlock values={values} />
-        <div className="demo-list-wrap">
-          <ul className="demo-column-list">
+    <section className="cms type15">
+      <div className="cms-inner">
+        <CmsHeader values={values} />
+        <div className="cms-list-wrap">
+          <ul className="cms-column-list text-type-1 row">
             {items(values.contents).map((item, index) => {
               const subtexts = items(item.subtext);
               return (
-                <li key={index} className="demo-list-item">
-                  <Pictures image={item.image} imageMobile={item.imageMobile} />
-                  <div className="demo-description-box">
-                    <p className="demo-title">{str(item.tit)}</p>
+                <li key={index} className="cms-list-item col-12 col-lg-4">
+                  <div className="cms-visual">
+                    <Img value={item.image} kind="pc" className="img-fluid d-none d-lg-block" />
+                    <Img value={item.imageMobile} kind="mobile" className="w-100 d-block d-lg-none" />
+                  </div>
+                  <div className="cms-description-box">
+                    <p className="cms-title">{str(item.tit)}</p>
                     {subtexts.length > 0 ? (
-                      <ul className="demo-bullet-list">
+                      <ul className="cms-bullet-list no-margin">
                         {subtexts.map((sub, subIndex) => (
-                          <li key={subIndex} className="demo-list-item demo-desc">
-                            {str(sub.text)}
+                          <li key={subIndex} className="cms-list-item">
+                            <p className="cms-description">{str(sub.text)}</p>
                           </li>
                         ))}
                       </ul>
                     ) : (
-                      <p className="demo-desc" {...richProps(item.text)} />
+                      <p className="cms-description" {...richProps(item.text)} />
                     )}
                   </div>
                 </li>
