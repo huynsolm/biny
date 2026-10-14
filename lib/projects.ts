@@ -1,11 +1,12 @@
 import fs from "node:fs";
 import path from "node:path";
 import matter from "gray-matter";
-import type { Project, ProjectKind, ProjectMeta } from "./types";
+import type { Project, ProjectGroup, ProjectKind, ProjectMeta } from "./types";
 
 const DEFAULT_DIR = path.join(process.cwd(), "content", "projects");
 const KINDS: ProjectKind[] = ["publishing", "frontend"];
-const REQUIRED = ["title", "summary", "kind", "role", "stack", "order"] as const;
+const GROUPS: ProjectGroup[] = ["featured", "experiment"];
+const REQUIRED = ["title", "summary", "kind", "group", "role", "stack", "order"] as const;
 // 파일명이 곧 주소(slug)다. 이 규칙을 지키지 않는 파일은 목록에는 나오는데 상세 페이지는 404가 되므로
 // 목록을 만드는 단계에서 막는다. "../" 같은 경로 탈출도 같은 규칙으로 막는다.
 const SLUG_PATTERN = /^[a-z0-9-]+$/;
@@ -25,6 +26,11 @@ function parse(file: string, raw: string): Project {
   if (!KINDS.includes(data.kind)) {
     throw new Error(
       `${path.basename(file)}: kind must be one of ${KINDS.join(", ")} (got "${data.kind}")`,
+    );
+  }
+  if (!GROUPS.includes(data.group)) {
+    throw new Error(
+      `${path.basename(file)}: group must be one of ${GROUPS.join(", ")} (got "${data.group}")`,
     );
   }
   if (!Array.isArray(data.stack) || typeof data.order !== "number") {
@@ -47,6 +53,7 @@ function parse(file: string, raw: string): Project {
     title: data.title,
     summary: data.summary,
     kind: data.kind,
+    group: data.group,
     role: data.role,
     stack: data.stack,
     order: data.order,

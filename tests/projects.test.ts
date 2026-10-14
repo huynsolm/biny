@@ -12,6 +12,7 @@ const meta = (order: number, slug: string): ProjectMeta => ({
   title: slug,
   summary: "s",
   kind: "publishing",
+  group: "featured",
   role: "r",
   stack: [],
   order,
@@ -39,6 +40,19 @@ describe("projects loader", () => {
 
   test("getAllProjects throws for an unknown kind", () => {
     expect(() => getAllProjects(fixture("bad-kind"))).toThrowError(/kind/);
+  });
+
+  test("getAllProjects throws when group is missing", () => {
+    expect(() => getAllProjects(fixture("missing-group"))).toThrowError(/missing front matter field "group"/);
+  });
+
+  test("getAllProjects throws for an unknown group", () => {
+    expect(() => getAllProjects(fixture("bad-group"))).toThrowError(/group/);
+  });
+
+  test("getAllProjects passes the group through", () => {
+    const groups = Object.fromEntries(getAllProjects(validDir).map((p) => [p.slug, p.group]));
+    expect(groups).toEqual({ zeta: "experiment", alpha: "featured", beta: "featured" });
   });
 
   test("getAllProjects throws when stack is not a list", () => {

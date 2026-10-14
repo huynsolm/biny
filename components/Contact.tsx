@@ -7,7 +7,7 @@ const GITHUB = "https://github.com/huynsolm";
 export default function Contact() {
   return (
     <section id="contact" className={`container ${styles.contact}`} aria-labelledby="contact-title">
-      <SectionHeading id="contact-title" number="08" name="contact" />
+      <SectionHeading id="contact-title" number="07" name="contact" />
       <ul className={styles.list}>
         <li>
           <a href={`mailto:${EMAIL}`}>{EMAIL}</a>

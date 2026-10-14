@@ -19,11 +19,11 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: "김영빈 | 포트폴리오",
-  description: "웹 퍼블리셔에서 프론트엔드 개발자로.",
+  description: "반응형·접근성·CMS 운영 경험을 바탕으로 React와 Next.js로 화면을 만듭니다.",
   // 링크를 메신저나 메일에 붙였을 때 보이는 미리보기 문구. 이미지는 아직 만들지 않는다.
   openGraph: {
     title: "김영빈 | 포트폴리오",
-    description: "웹 퍼블리셔에서 프론트엔드 개발자로.",
+    description: "반응형·접근성·CMS 운영 경험을 바탕으로 React와 Next.js로 화면을 만듭니다.",
     type: "website",
     locale: "ko_KR",
   },

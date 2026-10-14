@@ -40,3 +40,57 @@
   border: 1px dashed var(--color-line);
   color: var(--color-text-muted);
 }
+
+.note {
+  margin-bottom: var(--space-3);
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+}
+
+.groups {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.groupLabel {
+  margin-bottom: var(--space-3);
+  font-size: 0.75rem;
+  color: var(--color-accent);
+}
+
+.more {
+  border: 1px dashed var(--color-line);
+}
+
+.summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  min-height: 2.75rem;
+  padding: 0 var(--space-3);
+  color: var(--color-accent);
+  font-size: 0.75rem;
+  cursor: pointer;
+  list-style: none;
+}
+
+.summary::-webkit-details-marker {
+  display: none;
+}
+
+.summary::after {
+  content: "+";
+  font-family: var(--font-mono);
+  font-size: 1rem;
+}
+
+.more[open] > .summary::after {
+  content: "−";
+}
+
+.more > .list {
+  padding: var(--space-3);
+  padding-top: var(--space-2);
+}
