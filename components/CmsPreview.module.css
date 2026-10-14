@@ -198,3 +198,29 @@ textarea.control {
   flex-wrap: wrap;
   gap: var(--space-2);
 }
+
+.imageActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+/* 파일 선택 입력은 보이지 않게 두고, 감싼 label이 버튼처럼 보인다. 키보드 초점은 label에 표시한다. */
+.fileInput {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  overflow: hidden;
+}
+
+label.button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+label.button:focus-within {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}

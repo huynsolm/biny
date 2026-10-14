@@ -18,6 +18,7 @@ import {
   type TableValue,
   type Values,
 } from "@/lib/cms/schema";
+import CmsImageInput from "./CmsImageInput";
 import styles from "./CmsPreview.module.css";
 
 type Props = {
@@ -25,9 +26,6 @@ type Props = {
   values: Values;
   onChange: (next: Values) => void;
 };
-
-const IMAGE_HINT =
-  "샘플 이미지나 https:// 주소를 쓸 수 있어요. 비워 두면 이미지를 넣지 않고, 그 밖의 값은 샘플 이미지로 바뀌어요.";
 
 function readString(scope: Values, key: string): string {
   const value = scope[key];
@@ -312,21 +310,13 @@ export default function CmsEditor({ fields, values, onChange }: Props) {
           );
         case "image":
           return (
-            <div key={field.key} className={styles.field}>
-              <label htmlFor={id}>{label}</label>
-              <input
-                id={id}
-                className={styles.control}
-                type="text"
-                aria-describedby={`${id}-hint`}
-                maxLength={LIMITS.image}
-                value={readString(scope, field.key)}
-                onChange={(e) => set(e.target.value)}
-              />
-              <p id={`${id}-hint`} className={styles.hint}>
-                {IMAGE_HINT}
-              </p>
-            </div>
+            <CmsImageInput
+              key={field.key}
+              id={id}
+              label={label}
+              value={readString(scope, field.key)}
+              onChange={set}
+            />
           );
         case "select":
           return (

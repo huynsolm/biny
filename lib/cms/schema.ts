@@ -1,3 +1,5 @@
+import { IMAGE_DATA_MAX } from "./html";
+
 export type Path = (string | number)[];
 
 // 표의 칸. 병합(colspan, rowspan)을 지원하며, hidden은 다른 칸에 덮여 그리지 않는 칸이다.
@@ -28,6 +30,7 @@ export const LIMITS = {
   titlePart: 60,
   rich: 600,
   image: 200,
+  imageData: IMAGE_DATA_MAX,
   listItems: 12,
   subItems: 8,
   tableRows: 10,
@@ -157,7 +160,13 @@ function normalizeAt(fields: Field[], values: unknown, depth: number): Values {
         out[field.key] = str(value, LIMITS.rich);
         break;
       case "image":
-        out[field.key] = str(value, LIMITS.image);
+        // 첨부한 파일(data URL)은 경로보다 훨씬 길다. 중간에서 자르면 깨진 그림이 되므로 상한을 넘으면 비운다.
+        out[field.key] =
+          typeof value === "string" && value.startsWith("data:image/")
+            ? value.length <= LIMITS.imageData
+              ? value
+              : ""
+            : str(value, LIMITS.image);
         break;
       case "select":
         out[field.key] =
