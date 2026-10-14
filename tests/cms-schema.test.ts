@@ -219,3 +219,21 @@ describe("removeListItem", () => {
     expect(((next.contents as Values[])[0].subs as Values[])).toHaveLength(0);
   });
 });
+
+describe("normalizeValues with an attached image", () => {
+  const fields: Field[] = [{ kind: "image", key: "image", label: "PC 이미지" }];
+
+  test("keeps a data URL that fits the data limit, even though it is longer than a path", () => {
+    const value = `data:image/png;base64,${"A".repeat(LIMITS.image * 5)}`;
+    expect(normalizeValues(fields, { image: value }).image).toBe(value);
+  });
+
+  test("drops a data URL above the data limit instead of cutting it in the middle", () => {
+    const value = `data:image/png;base64,${"A".repeat(LIMITS.imageData)}`;
+    expect(normalizeValues(fields, { image: value }).image).toBe("");
+  });
+
+  test("still cuts an ordinary long value at the path limit", () => {
+    expect((normalizeValues(fields, { image: "/".padEnd(500, "a") }).image as string).length).toBe(LIMITS.image);
+  });
+});
